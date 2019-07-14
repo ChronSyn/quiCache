@@ -4,6 +4,16 @@
 
 > Easily store and retrieve data while it's not expired!
 
+## Install
+
+**NPM**
+
+`npm i --save quiCache`
+
+**Yarn**
+
+`yarn add quiCache`
+
 ## How it works
 
 quiCache provides a key-value structure for data to be stored in. During construction, you can specify the following properties;
