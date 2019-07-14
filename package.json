@@ -1,6 +1,6 @@
 {
   "name": "quicache",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A simple key-value cache for Javascript applications",
   "main": "index.js",
   "scripts": {
