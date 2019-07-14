@@ -1,0 +1,43 @@
+{
+  "name": "quicache",
+  "version": "1.0.0",
+  "description": "A simple key-value cache for Javascript applications",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:doc": "jsdoc2md --files ./lib/*.ts --configure ./jsdoc2md.json > ./api.md"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChronSyn/quicache.git"
+  },
+  "keywords": [
+    "cache",
+    "typescript",
+    "key",
+    "value",
+    "javascript",
+    "ts"
+  ],
+  "author": "Scott Pritchard",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ChronSyn/quicache/issues"
+  },
+  "homepage": "https://github.com/ChronSyn/quicache#readme",
+  "dependencies": {
+    "jsdoc-md": "^3.0.0",
+    "lodash": "^4.17.14",
+    "moment-timezone": "^0.5.26"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.0",
+    "@babel/core": "^7.5.4",
+    "@babel/plugin-proposal-class-properties": "^7.5.0",
+    "@babel/preset-env": "^7.5.4",
+    "@babel/preset-typescript": "^7.3.3",
+    "jsdoc-babel": "^0.5.0",
+    "jsdoc-to-markdown": "^5.0.0",
+    "typescript": "^3.5.3"
+  }
+}
