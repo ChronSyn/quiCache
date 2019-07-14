@@ -36,7 +36,7 @@ See [api.md](./api.md) for full details
     const cache = new Cache();
 
     const myCachedDataKey = "openSource";
-    if (!cache.cahceDataExists(myCachedDataKey) || !cache.hasCacheExpired(myCachedDataKey)){
+    if (!cache.cacheDataExists(myCachedDataKey) || !cache.hasCacheExpired(myCachedDataKey)){
       const myObjectToCache = {
         aString: "abc",
         aBoolean: true,
