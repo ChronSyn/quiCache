@@ -145,7 +145,7 @@
 <a name="CacheManager+cacheDataIsValid"></a>
 
 ### cacheManager.cacheDataIsValid(field) ⇒ <code>boolean</code>
-<p>Checks is some of our cached data is present and expired</p>
+<p>Checks if some of our cached data is present and not expired</p>
 
 **Kind**: instance method of [<code>CacheManager</code>](#CacheManager)  
 **Returns**: <code>boolean</code> - <p>Is our cached data present, and is it not expired? (true: present and not expired, false, not present or has expired)</p>  

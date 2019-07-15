@@ -193,7 +193,7 @@ class CacheManager implements ICacheManager {
   }
 
   /**
-   * @description Checks is some of our cached data is present and expired
+   * @description Checks if some of our cached data is present and not expired
    * @param {string} field The key we want to check the validity of (i.e. it is present in the cache, and it has not expired)
    * @returns {boolean} Is our cached data present, and is it not expired? (true: present and not expired, false, not present or has expired)
    */
