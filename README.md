@@ -18,6 +18,7 @@
 
 quiCache provides a key-value structure for data to be stored in. During construction, you can specify the following properties;
 
+- useNativeDate &lt;boolean = false> : Whether to use native JS date or to use moment-timezone
 - cacheMaxAgeValue &lt;number = 30> : The maximum age of any data before it is considered expired
 - cacheMaxAgeUnit &lt;moment.unitOfTime.All = 'seconds'> : The time unit used with cacheMaxAgeValue
 - timezone: &lt;string = 'europe/london'> : The timezone for keys to be stored and compared against
@@ -36,7 +37,7 @@ See [api.md](./api.md) for full details
     const myCache = new cache();
 
     const myCachedDataKey = "openSource";
-    if (!myCache.cacheDataExists(myCachedDataKey) || !myCache.hasCacheExpired(myCachedDataKey)){
+    if (!myCache.cacheDataIsValid(myCachedDataKey)){
       const myObjectToCache = {
         aString: "abc",
         aBoolean: true,

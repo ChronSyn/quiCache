@@ -2,8 +2,8 @@ import moment from 'moment-timezone';
 import has from 'lodash/has';
 import get from 'lodash/get';
 
-interface ICacheManagerDataCache {
-  timestamp: string,
+export interface ICacheManagerDataCache {
+  timestamp: number,
   data: {
     [key: string]: any
   }
@@ -18,7 +18,11 @@ export interface ICacheManager {
   cacheDataExists: (field: string) => boolean;
   getCacheDataAge: (field: string, unitOfTime: moment.unitOfTime.All) => number;
   hasCacheExpired: (field: string) => boolean;
+  cacheDataIsValid: (field: string) => boolean;
   setDebug: () => this;
+  enableDebugLogs: () => this;
+  disableDebugLogs: () => this;
+  enableNativeDate: () => this;
 }
 
 class CacheManager implements ICacheManager {
@@ -26,24 +30,56 @@ class CacheManager implements ICacheManager {
   private cacheMaxAgeValue;
   private cacheMaxAgeUnit;
   private showDebug;
+  private useNativeDate;
 
   /**
+   * @param {boolean} useNativeDate Whether to use native JS date or to use momentJS
    * @param {number} cacheMaxAgeValue The maximum age of the cached data (in cacheMaxAgeUnit)
    * @param {number} cacheMaxAgeUnit The unit which cacheMaxAgeValue should operate at
-   * @param {string} timezone The timezone which timestamps should be set in
+   * @param {string} timezone The timezone which timestamps should be set in - only applies when not using native JS
    */
-  constructor(cacheMaxAgeValue: number = 30, cacheMaxAgeUnit: moment.unitOfTime.All = 'seconds', timezone: string = 'Europe/London'){
+  constructor(useNativeDate = false, cacheMaxAgeValue: number = 30, cacheMaxAgeUnit: moment.unitOfTime.All = 'seconds', timezone: string = 'Europe/London'){
     this.dataCache  = {};
     this.cacheMaxAgeValue = cacheMaxAgeValue;
     this.cacheMaxAgeUnit = cacheMaxAgeUnit;
+    this.useNativeDate = useNativeDate;
     moment.tz.setDefault(timezone)
   }
 
   /**
-   * @description Enables debug logs
+   * @description Enables JS native date. It is not possible to go back to moment format once this is set!
    * @returns {this} The cache manager instance
    */
-  setDebug(): this {
+  enableNativeDate(): this {
+    this.useNativeDate = true;
+    return this;
+  }
+
+
+  /**
+   * @description Alias of this.enableDebugLogs. This method is deprecated - please use enableDebugLogs().
+   * @returns {this} The cache manager instance
+   * @deprecated This method is deprecated - please use enableDebugLogs()
+   */
+  setDebug():this{
+    console.log("This method is deprecated. Please use enableDebugLogs()")
+    return this.enableDebugLogs();
+  }
+
+  /**
+   * @description Enables debug logs.
+   * @returns {this} The cache manager instance
+   */
+  enableDebugLogs(): this {
+    this.showDebug = true;
+    return this;
+  }
+
+  /**
+   * @description Disables debug logs.
+   * @returns {this} The cache manager instance
+   */
+  disableDebugLogs(): this {
     this.showDebug = true;
     return this;
   }
@@ -110,7 +146,7 @@ class CacheManager implements ICacheManager {
       console.log("setCacheData", field)
     };
     this.dataCache[field] = {
-      timestamp: moment(),
+      timestamp: (this.useNativeDate) ? new Date().getTime() : moment(),
       data: data
     }
     return this.dataCache[field];
@@ -137,7 +173,9 @@ class CacheManager implements ICacheManager {
     if(this.showDebug){
       console.log("setCacheData", field)
     };
-    return moment().diff(moment(this.dataCache[field].timestamp), this.cacheMaxAgeUnit, true);
+    return (this.useNativeDate)
+      ? (new Date().getTime()-this.dataCache[field].timestamp)
+      : moment().diff(moment(this.dataCache[field].timestamp), this.cacheMaxAgeUnit, true);
   }
 
   /**
@@ -149,7 +187,18 @@ class CacheManager implements ICacheManager {
     if(this.showDebug){
       console.log("hasCacheExpired", field, this.dataCache[field].timestamp);
     };
-    return moment().diff(moment(this.dataCache[field].timestamp), this.cacheMaxAgeUnit, true) > this.cacheMaxAgeValue;
+    return (this.useNativeDate)
+      ? (new Date().getTime()-this.dataCache[field].timestamp) > this.cacheMaxAgeUnit
+      : moment().diff(moment(this.dataCache[field].timestamp), this.cacheMaxAgeUnit, true) > this.cacheMaxAgeValue;
+  }
+
+  /**
+   * @description Checks is some of our cached data is present and expired
+   * @param {string} field The key we want to check the validity of (i.e. it is present in the cache, and it has not expired)
+   * @returns {boolean} Is our cached data present, and is it not expired? (true: present and not expired, false, not present or has expired)
+   */
+  cacheDataIsValid(field: string): boolean {
+    return this.cacheDataExists(field) && this.hasCacheExpired(field);
   }
 }
 
