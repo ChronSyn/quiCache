@@ -33,18 +33,18 @@ See [api.md](./api.md) for full details
 ## Example
 
     import cache from 'quiCache';
-    const cache = new Cache();
+    const myCache = new cache();
 
     const myCachedDataKey = "openSource";
-    if (!cache.cacheDataExists(myCachedDataKey) || !cache.hasCacheExpired(myCachedDataKey)){
+    if (!myCache.cacheDataExists(myCachedDataKey) || !myCache.hasCacheExpired(myCachedDataKey)){
       const myObjectToCache = {
         aString: "abc",
         aBoolean: true,
         aNumber: 123
       };
-      return cache.setCacheData(myCachedDataKey, myObjectToCache);
+      return myCache.setCacheData(myCachedDataKey, myObjectToCache);
     }
-    return cache.getCacheData(myCachedDataKey);
+    return myCache.getCacheData(myCachedDataKey);
 
 ## Author(s)
 
