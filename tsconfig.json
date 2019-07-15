@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    // "module": "esnext",
+    "target": "esnext",
+    "baseUrl": ".",
+    "paths": {
+      "@Root/*": ["./*"],
+      "@Data/*": ["data/*"],
+      "@Modules/*": ["modules/*"],
+      "@Routers/*": ["modules/routers/*"],
+      "@Constants/*": ["constants/*"],
+      "@Interfaces/*": ["interfaces/*"]
+    },
+  },
+  "include": [
+    "./**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

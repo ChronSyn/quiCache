@@ -1,8 +1,8 @@
-# quiCache - A simple key-value cache for Javascript applications
+# quiCache
 
-![version](https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000)
+![version](https://img.shields.io/badge/version-1.0.3-blue.svg?cacheSeconds=2592000)
 
-> Easily store and retrieve data while it's not expired!
+> A simple key-value cache for Javascript applications
 
 ## Install
 
@@ -14,7 +14,7 @@
 
 `yarn add quiCache`
 
-## How it works
+## Introduction
 
 quiCache provides a key-value structure for data to be stored in. During construction, you can specify the following properties;
 
@@ -26,6 +26,8 @@ quiCache provides a key-value structure for data to be stored in. During constru
 When adding data to the cache, you specify the key, and the data, and quiCache handles everything else.
 
 When reading data from the cache, simply provide the key.
+
+Keys should be unique as calling `setCacheData()` with a key which already exists will overwrite data already in the cache at that key. A solution to this would be to create a new quiCache instance.
 
 ## API
 

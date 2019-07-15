@@ -37,13 +37,14 @@ class CacheManager implements ICacheManager {
    * @param {number} cacheMaxAgeValue The maximum age of the cached data (in cacheMaxAgeUnit)
    * @param {number} cacheMaxAgeUnit The unit which cacheMaxAgeValue should operate at
    * @param {string} timezone The timezone which timestamps should be set in - only applies when not using native JS
+   * @implements {ICacheManager} ICacheManager instance
    */
   constructor(useNativeDate = false, cacheMaxAgeValue: number = 30, cacheMaxAgeUnit: moment.unitOfTime.All = 'seconds', timezone: string = 'Europe/London'){
     this.dataCache  = {};
     this.cacheMaxAgeValue = cacheMaxAgeValue;
     this.cacheMaxAgeUnit = cacheMaxAgeUnit;
     this.useNativeDate = useNativeDate;
-    moment.tz.setDefault(timezone)
+    // moment.tz.setDefault(timezone)
   }
 
   /**
@@ -159,7 +160,7 @@ class CacheManager implements ICacheManager {
    */
   cacheDataExists(field: string): boolean {
     if(this.showDebug){
-      console.log("setCacheData", field)
+      console.log("cacheDataExists", field)
     };
     return has(this, `dataCache[${field}]`);
   }
@@ -171,7 +172,7 @@ class CacheManager implements ICacheManager {
    */
   getCacheDataAge(field: string): number {
     if(this.showDebug){
-      console.log("setCacheData", field)
+      console.log("getCacheDataAge", field)
     };
     return (this.useNativeDate)
       ? (new Date().getTime()-this.dataCache[field].timestamp)
