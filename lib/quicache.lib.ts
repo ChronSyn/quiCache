@@ -2,14 +2,14 @@ import has from 'lodash/has';
 import get from 'lodash/get';
 
 export enum ETimeDuration {
-  SECOND = "seconds",
-  SECONDS = "seconds",
-  MINUTE = "minutes",
-  MINUTES = "minutes",
-  HOUR = "hours",
-  HOURS = "hours",
-  DAY = "days",
-  DAYS = "days"
+  SECOND = "SECONDS",
+  SECONDS = "SECONDS",
+  MINUTE = "MINUTES",
+  MINUTES = "MINUTES",
+  HOUR = "HOURS",
+  HOURS = "HOURS",
+  DAY = "DAYS",
+  DAYS = "DAYS"
 }
 
 export interface IConvertStructure {
@@ -30,9 +30,10 @@ export interface ICacheManagerDataCache {
   }
 }
 
-export enum QuicacheErrorMessages {
+export enum QuicacheMessages {
   ERROR_TIME_LT1 = "Time can not be less than 1",
-  ERROR_DEPRECATED_USE_ENABLEDEBUGLOGS = "This method is deprecated. Please use enableDebugLogs()"
+  ERROR_DEPRECATED_USE_ENABLEDEBUGLOGS = "This method is deprecated. Please use enableDebugLogs()",
+  MESSAGE_DEBUG_LOGS_ENABLED = "[QUICACHE] Debug logs enabled"
 }
 
 export interface ICacheManager {
@@ -57,6 +58,15 @@ class CacheManager implements ICacheManager {
   private _showDebug;
 
   /**
+   * @description Outputs a debug log message
+   * @param {string} message The debug message to display
+   * @private
+   */
+  private _debugLog(message: string = ""){
+    console.log(`${new Date().getTime()} [QUICACHE] (debug): ${message}`)
+  }
+
+  /**
    * @description Converts a time to the various ETimeDuration (e.g. seconds to [seconds, minutes, hours, days])
    * @param {number} inTime The time to convert
    * @param {ETimeDuration} inFormat The format of inTime
@@ -65,59 +75,59 @@ class CacheManager implements ICacheManager {
    */
   private _convert(inTime: number = 30, inFormat: ETimeDuration = ETimeDuration.SECONDS): IConvertStructure {
     if(inTime < 1){
-      throw new Error(QuicacheErrorMessages.ERROR_TIME_LT1);
+      throw new Error(QuicacheMessages.ERROR_TIME_LT1);
     }
     return (()=>{
       switch(inFormat){
         case ETimeDuration.MINUTE:
         case ETimeDuration.MINUTES:
           return {
-            SECOND: inTime * 60,
-            SECONDS: inTime * 60,
-            MINUTE: inTime,
-            MINUTES: inTime,
-            HOUR: inTime / 60,
-            HOURS: inTime / 60,
-            DAY: inTime / 60 / 24,
-            DAYS: inTime / 60 / 24,
+            SECOND: (inTime * 60) / 1000,
+            SECONDS: (inTime * 60) / 1000,
+            MINUTE: (inTime) / 1000,
+            MINUTES: (inTime) / 100,
+            HOUR: (inTime / 60) / 1000,
+            HOURS: (inTime / 60) / 1000,
+            DAY: (inTime / 60 / 24) / 1000,
+            DAYS: (inTime / 60 / 24) / 1000,
           }
         case ETimeDuration.HOUR:
         case ETimeDuration.HOURS:
           return {
-            SECOND: inTime * 60 * 60,
-            SECONDS: inTime * 60 * 60,
-            MINUTE: inTime * 60,
-            MINUTES: inTime * 60,
-            HOUR: inTime,
-            HOURS: inTime,
-            DAY: inTime / 24,
-            DAYS: inTime / 24,
+            SECOND: (inTime * 60 * 60) / 1000,
+            SECONDS: (inTime * 60 * 60) / 1000,
+            MINUTE: (inTime * 60) / 1000,
+            MINUTES: (inTime * 60) / 1000,
+            HOUR: (inTime) / 1000,
+            HOURS: (inTime) / 1000,
+            DAY: (inTime / 24) / 1000,
+            DAYS: (inTime / 24) / 1000,
           }
 
         case ETimeDuration.DAY:
         case ETimeDuration.DAYS:
           return {
-            SECOND: inTime * 60 * 60 * 60,
-            SECONDS: inTime * 60 * 60 * 60,
-            MINUTE: inTime * 60 * 60,
-            MINUTES: inTime * 60 * 60,
-            HOUR: inTime * 24,
-            HOURS: inTime * 24,
-            DAY: inTime,
-            DAYS: inTime,
+            SECOND: (inTime * 60 * 60 * 60) / 1000,
+            SECONDS: (inTime * 60 * 60 * 60) / 1000,
+            MINUTE: (inTime * 60 * 60) / 1000,
+            MINUTES: (inTime * 60 * 60) / 1000,
+            HOUR: (inTime * 24) / 1000,
+            HOURS: (inTime * 24) / 1000,
+            DAY: (inTime) / 1000,
+            DAYS: (inTime) / 1000,
           }
         case ETimeDuration.SECOND:
         case ETimeDuration.SECONDS:
         default:
           return {
-            SECOND: inTime,
-            SECONDS: inTime,
-            MINUTE: inTime / 60,
-            MINUTES: inTime / 60,
-            HOUR: inTime / 60 / 60,
-            HOURS: inTime / 60 / 60,
-            DAY: inTime / 60 / 60 / 24,
-            DAYS: inTime / 60 / 60 / 24,
+            SECOND: (inTime) / 1000,
+            SECONDS: (inTime) / 1000,
+            MINUTE: (inTime / 60) / 1000,
+            MINUTES: (inTime / 60) / 1000,
+            HOUR: (inTime / 60 / 60) / 1000,
+            HOURS: (inTime / 60 / 60) / 1000,
+            DAY: (inTime / 60 / 60 / 24) / 1000,
+            DAYS: (inTime / 60 / 60 / 24) / 1000,
           }
       }
     })();
@@ -131,7 +141,7 @@ class CacheManager implements ICacheManager {
   constructor(_cacheMaxAgeValue: number = 30, _cacheMaxAgeUnit: ETimeDuration = ETimeDuration.SECONDS){
     this._dataCache  = {};
     if (_cacheMaxAgeValue < 1){
-      throw new Error(QuicacheErrorMessages.ERROR_TIME_LT1);
+      throw new Error(QuicacheMessages.ERROR_TIME_LT1);
     }
     this._cacheMaxAgeValue = _cacheMaxAgeValue;
     this._cacheMaxAgeUnit = _cacheMaxAgeUnit;
@@ -143,7 +153,7 @@ class CacheManager implements ICacheManager {
    * @deprecated This method is deprecated - please use enableDebugLogs()
    */
   setDebug(): this{
-    console.log(QuicacheErrorMessages.ERROR_DEPRECATED_USE_ENABLEDEBUGLOGS)
+    this._debugLog(QuicacheMessages.ERROR_DEPRECATED_USE_ENABLEDEBUGLOGS)
     return this.enableDebugLogs();
   }
 
@@ -153,6 +163,7 @@ class CacheManager implements ICacheManager {
    */
   enableDebugLogs(): this {
     this._showDebug = true;
+    this._debugLog("Debug logs are now enabled");
     return this;
   }
 
@@ -162,6 +173,7 @@ class CacheManager implements ICacheManager {
    */
   disableDebugLogs(): this {
     this._showDebug = true;
+    this._debugLog("Debug logs are now disabled")
     return this;
   }
 
@@ -171,7 +183,7 @@ class CacheManager implements ICacheManager {
    */
   getAllCachedData(): ICacheManagerDataCache {
     if(this._showDebug){
-      console.log("getAllCachedData")
+      this._debugLog(`Call to "getAllCachedData"`)
     };
     return this._dataCache;
   }
@@ -182,7 +194,7 @@ class CacheManager implements ICacheManager {
    */
   getNonExpiredData(): ICacheManagerDataCache {
     if(this._showDebug){
-      console.log("getNonExpiredData")
+      this._debugLog(`Call to "getNonExpiredData"`)
     };
     return {
       timestamp: this._dataCache.timestamp,
@@ -196,7 +208,7 @@ class CacheManager implements ICacheManager {
    */
   getExpiredData(): ICacheManagerDataCache {
     if(this._showDebug){
-      console.log("getExpiredData")
+      this._debugLog(`Call to "getExpiredData"`)
     };
     return {
       timestamp: this._dataCache.timestamp,
@@ -211,7 +223,7 @@ class CacheManager implements ICacheManager {
    */
   getCacheData(field: string): ICacheManagerDataCache {
     if(this._showDebug){
-      console.log("getCacheData", field)
+      this._debugLog(`Call to "getCacheData" for field "${field}"`)
     };
     return get(this, `_dataCache[${field}]`, this.getAllCachedData());
   }
@@ -224,7 +236,7 @@ class CacheManager implements ICacheManager {
    */
   setCacheData(field: string, data: any): ICacheManagerDataCache{
     if(this._showDebug){
-      console.log("setCacheData", field)
+      this._debugLog(`Call to "setCacheData" for field "${field}"`)
     };
     this._dataCache[field] = {
       timestamp: new Date().getTime(),
@@ -240,7 +252,7 @@ class CacheManager implements ICacheManager {
    */
   cacheDataExists(field: string): boolean {
     if(this._showDebug){
-      console.log("cacheDataExists", field)
+      this._debugLog(`Call to "cacheDataExists" for field "${field}"`)
     };
     return has(this, `_dataCache[${field}]`);
   }
@@ -252,7 +264,7 @@ class CacheManager implements ICacheManager {
    */
   getCacheDataAge(field: string): number {
     if(this._showDebug){
-      console.log("getCacheDataAge", field)
+      this._debugLog(`Call to "getCacheDataAge" for field "${field}"`)
     };
     return this._convert(new Date().getTime() - this._dataCache[field].timestamp, this._cacheMaxAgeUnit)[this._cacheMaxAgeUnit];
   }
@@ -263,10 +275,11 @@ class CacheManager implements ICacheManager {
    * @returns {boolean} Has our cached data expired?
    */
   hasCacheExpired(field: string): boolean {
+    const compareCalculation = new Date().getTime() - this._dataCache[field].timestamp;
     if(this._showDebug){
-      console.log("hasCacheExpired", field, this._dataCache[field].timestamp);
+      this._debugLog(`Call to "hasCacheExpired" for "${field}".`);
     };
-    const convertedTime = this._convert(new Date().getTime()-this._dataCache[field].timestamp, this._cacheMaxAgeUnit);
+    const convertedTime = this._convert(compareCalculation, this._cacheMaxAgeUnit);
     return convertedTime[this._cacheMaxAgeUnit] > this._cacheMaxAgeValue
   }
 
@@ -276,6 +289,7 @@ class CacheManager implements ICacheManager {
    * @returns {boolean} Is our cached data present, and is it not expired? (true: present and not expired, false, not present or has expired)
    */
   cacheDataIsValid(field: string): boolean {
+    this._debugLog(`Call to "cacheDataIsValid" for "${field}".`);
     return this.cacheDataExists(field) && this.hasCacheExpired(field);
   }
 }

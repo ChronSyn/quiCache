@@ -6,6 +6,8 @@
   "scripts": {
     "test": "mocha -r ts-node/register ./**/*.spec.ts",
     "test-coverage": "nyc --reporter=text mocha -r ts-node/register ./**/*.spec.ts",
+    "dev": "tsc --watch",
+    "build": "tsc",
     "build:doc": "jsdoc2md --files ./lib/*.ts --configure ./jsdoc2md.json > ./api.md"
   },
   "repository": {

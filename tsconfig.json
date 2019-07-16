@@ -5,8 +5,8 @@
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    // "module": "esnext",
-    "target": "esnext",
+    "module": "commonjs",
+    "target": "es2017",
     "baseUrl": ".",
     "paths": {
       "@Root/*": ["./*"],
