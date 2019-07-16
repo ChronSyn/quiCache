@@ -16,12 +16,10 @@
 
 ## Introduction
 
-quiCache provides a key-value structure for data to be stored in. During construction, you can specify the following properties;
+quiCache provides a key-value structure for data to be stored in. During construction, you can specify the following (optional) properties;
 
-- useNativeDate &lt;boolean = false> : Whether to use native JS date or to use moment-timezone
 - cacheMaxAgeValue &lt;number = 30> : The maximum age of any data before it is considered expired
-- cacheMaxAgeUnit &lt;moment.unitOfTime.All = 'seconds'> : The time unit used with cacheMaxAgeValue
-- timezone: &lt;string = 'europe/london'> : The timezone for keys to be stored and compared against
+- cacheMaxAgeUnit &lt;ETimeDuration = 'seconds'> : The time unit used with cacheMaxAgeValue
 
 When adding data to the cache, you specify the key, and the data, and quiCache handles everything else.
 

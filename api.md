@@ -2,10 +2,10 @@
 
 ## CacheManager
 **Kind**: global class  
+**Implements**: <code>ICacheManager</code>  
 
 * [CacheManager](#CacheManager)
-    * [new CacheManager(useNativeDate, cacheMaxAgeValue, cacheMaxAgeUnit, timezone)](#new_CacheManager_new)
-    * [.enableNativeDate()](#CacheManager+enableNativeDate) ⇒ <code>this</code>
+    * [new CacheManager(_cacheMaxAgeValue, _cacheMaxAgeUnit)](#new_CacheManager_new)
     * ~~[.setDebug()](#CacheManager+setDebug) ⇒ <code>this</code>~~
     * [.enableDebugLogs()](#CacheManager+enableDebugLogs) ⇒ <code>this</code>
     * [.disableDebugLogs()](#CacheManager+disableDebugLogs) ⇒ <code>this</code>
@@ -21,22 +21,13 @@
 
 <a name="new_CacheManager_new"></a>
 
-### new CacheManager(useNativeDate, cacheMaxAgeValue, cacheMaxAgeUnit, timezone)
+### new CacheManager(_cacheMaxAgeValue, _cacheMaxAgeUnit)
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| useNativeDate | <code>boolean</code> | <code>false</code> | <p>Whether to use native JS date or to use momentJS</p> |
-| cacheMaxAgeValue | <code>number</code> | <code>30</code> | <p>The maximum age of the cached data (in cacheMaxAgeUnit)</p> |
-| cacheMaxAgeUnit | <code>number</code> | <code>seconds</code> | <p>The unit which cacheMaxAgeValue should operate at</p> |
-| timezone | <code>string</code> | <code>&quot;Europe/London&quot;</code> | <p>The timezone which timestamps should be set in - only applies when not using native JS</p> |
+| _cacheMaxAgeValue | <code>number</code> | <code>30</code> | <p>The maximum age of the cached data (in _cacheMaxAgeUnit)</p> |
+| _cacheMaxAgeUnit | <code>number</code> |  | <p>The unit which _cacheMaxAgeValue should operate at</p> |
 
-<a name="CacheManager+enableNativeDate"></a>
-
-### cacheManager.enableNativeDate() ⇒ <code>this</code>
-<p>Enables JS native date. It is not possible to go back to moment format once this is set!</p>
-
-**Kind**: instance method of [<code>CacheManager</code>](#CacheManager)  
-**Returns**: <code>this</code> - <p>The cache manager instance</p>  
 <a name="CacheManager+setDebug"></a>
 
 ### ~~cacheManager.setDebug() ⇒ <code>this</code>~~
@@ -140,7 +131,7 @@
 
 | Param | Type | Description |
 | --- | --- | --- |
-| field | <code>string</code> | <p>The key we want to check for expiry (i.e. is it older than our cacheMaxAgeValue)</p> |
+| field | <code>string</code> | <p>The key we want to check for expiry (i.e. is it older than our _cacheMaxAgeValue)</p> |
 
 <a name="CacheManager+cacheDataIsValid"></a>
 

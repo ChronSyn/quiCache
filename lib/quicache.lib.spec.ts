@@ -1,6 +1,5 @@
 import cache, { ICacheManager, ICacheManagerDataCache } from "./quicache.lib";
 import { assert, expect } from "chai";
-import moment from 'moment-timezone';
 import "mocha";
 
 const CacheManagerFunctions = [
@@ -15,8 +14,7 @@ const CacheManagerFunctions = [
   "cacheDataIsValid",
   "setDebug",
   "enableDebugLogs",
-  "disableDebugLogs",
-  "enableNativeDate",
+  "disableDebugLogs"
 ];
 
 const myCache = new cache();
