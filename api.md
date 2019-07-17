@@ -3,9 +3,11 @@
 ## CacheManager
 **Kind**: global class  
 **Implements**: <code>ICacheManager</code>  
+**Access**: public  
 
 * [CacheManager](#CacheManager)
     * [new CacheManager(_cacheMaxAgeValue, _cacheMaxAgeUnit)](#new_CacheManager_new)
+    * [.getCacheSize([field])](#CacheManager+getCacheSize) ⇒ <code>number</code>
     * ~~[.setDebug()](#CacheManager+setDebug) ⇒ <code>this</code>~~
     * [.enableDebugLogs()](#CacheManager+enableDebugLogs) ⇒ <code>this</code>
     * [.disableDebugLogs()](#CacheManager+disableDebugLogs) ⇒ <code>this</code>
@@ -28,6 +30,19 @@
 | _cacheMaxAgeValue | <code>number</code> | <code>30</code> | <p>The maximum age of the cached data (in _cacheMaxAgeUnit)</p> |
 | _cacheMaxAgeUnit | <code>number</code> |  | <p>The unit which _cacheMaxAgeValue should operate at</p> |
 
+<a name="CacheManager+getCacheSize"></a>
+
+### cacheManager.getCacheSize([field]) ⇒ <code>number</code>
+<p>Allows us to identify the size of the entire cache, or a specific field within the cache.</p>
+
+**Kind**: instance method of [<code>CacheManager</code>](#CacheManager)  
+**Returns**: <code>number</code> - <p>The size of the requested cache data in bytes according to <code>JSON.stringify().length</code></p>  
+**Access**: public  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [field] | <code>string</code> | <p>[Optional] They key of the data we want to check the size of. If not present, will get the size of the entire cache.</p> |
+
 <a name="CacheManager+setDebug"></a>
 
 ### ~~cacheManager.setDebug() ⇒ <code>this</code>~~
@@ -37,6 +52,7 @@
 
 **Kind**: instance method of [<code>CacheManager</code>](#CacheManager)  
 **Returns**: <code>this</code> - <p>The cache manager instance</p>  
+**Access**: public  
 <a name="CacheManager+enableDebugLogs"></a>
 
 ### cacheManager.enableDebugLogs() ⇒ <code>this</code>
@@ -44,6 +60,7 @@
 
 **Kind**: instance method of [<code>CacheManager</code>](#CacheManager)  
 **Returns**: <code>this</code> - <p>The cache manager instance</p>  
+**Access**: public  
 <a name="CacheManager+disableDebugLogs"></a>
 
 ### cacheManager.disableDebugLogs() ⇒ <code>this</code>
@@ -51,6 +68,7 @@
 
 **Kind**: instance method of [<code>CacheManager</code>](#CacheManager)  
 **Returns**: <code>this</code> - <p>The cache manager instance</p>  
+**Access**: public  
 <a name="CacheManager+getAllCachedData"></a>
 
 ### cacheManager.getAllCachedData() ⇒ <code>ICacheManagerDataCache</code>
@@ -58,6 +76,7 @@
 
 **Kind**: instance method of [<code>CacheManager</code>](#CacheManager)  
 **Returns**: <code>ICacheManagerDataCache</code> - <p>The object which contains the timestamp and data</p>  
+**Access**: public  
 <a name="CacheManager+getNonExpiredData"></a>
 
 ### cacheManager.getNonExpiredData() ⇒ <code>ICacheManagerDataCache</code>
@@ -65,6 +84,7 @@
 
 **Kind**: instance method of [<code>CacheManager</code>](#CacheManager)  
 **Returns**: <code>ICacheManagerDataCache</code> - <p>The object which contains the timestamp and data</p>  
+**Access**: public  
 <a name="CacheManager+getExpiredData"></a>
 
 ### cacheManager.getExpiredData() ⇒ <code>ICacheManagerDataCache</code>
@@ -72,6 +92,7 @@
 
 **Kind**: instance method of [<code>CacheManager</code>](#CacheManager)  
 **Returns**: <code>ICacheManagerDataCache</code> - <p>The object which contains the timestamp and data</p>  
+**Access**: public  
 <a name="CacheManager+getCacheData"></a>
 
 ### cacheManager.getCacheData(field) ⇒ <code>ICacheManagerDataCache</code>
@@ -79,6 +100,7 @@
 
 **Kind**: instance method of [<code>CacheManager</code>](#CacheManager)  
 **Returns**: <code>ICacheManagerDataCache</code> - <p>The data which you cached with this key</p>  
+**Access**: public  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -91,6 +113,7 @@
 
 **Kind**: instance method of [<code>CacheManager</code>](#CacheManager)  
 **Returns**: <code>ICacheManagerDataCache</code> - <p>The data which has been cached, including it's timestamp</p>  
+**Access**: public  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -104,6 +127,7 @@
 
 **Kind**: instance method of [<code>CacheManager</code>](#CacheManager)  
 **Returns**: <code>boolean</code> - <p>Does the data exist in the cache or not</p>  
+**Access**: public  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -116,6 +140,7 @@
 
 **Kind**: instance method of [<code>CacheManager</code>](#CacheManager)  
 **Returns**: <code>number</code> - <p>The number, in seconds, since the timestampe was last modified (i.e. since the data was updates or places into the cache)</p>  
+**Access**: public  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -128,6 +153,7 @@
 
 **Kind**: instance method of [<code>CacheManager</code>](#CacheManager)  
 **Returns**: <code>boolean</code> - <p>Has our cached data expired?</p>  
+**Access**: public  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -140,6 +166,7 @@
 
 **Kind**: instance method of [<code>CacheManager</code>](#CacheManager)  
 **Returns**: <code>boolean</code> - <p>Is our cached data present, and is it not expired? (true: present and not expired, false, not present or has expired)</p>  
+**Access**: public  
 
 | Param | Type | Description |
 | --- | --- | --- |
