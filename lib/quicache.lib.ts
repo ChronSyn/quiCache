@@ -155,7 +155,7 @@ class CacheManager implements ICacheManager {
    * @public
    * @returns {number} The size of the requested cache data in bytes according to `JSON.stringify().length`
    */
-  getCacheSize(field: string): number {
+  public getCacheSize(field: string): number {
     if(!field){
       if(this._showDebug){
         this._debugLog(`Call to "getCacheSize" without field, returning full cache size`)
@@ -175,7 +175,7 @@ class CacheManager implements ICacheManager {
    * @returns {this} The cache manager instance
    * @deprecated This method is deprecated - please use enableDebugLogs()
    */
-  setDebug(): this{
+  public setDebug(): this{
     this._debugLog(QuicacheMessages.ERROR_DEPRECATED_USE_ENABLEDEBUGLOGS)
     return this.enableDebugLogs();
   }
@@ -185,7 +185,7 @@ class CacheManager implements ICacheManager {
    * @public
    * @returns {this} The cache manager instance
    */
-  enableDebugLogs(): this {
+  public enableDebugLogs(): this {
     this._showDebug = true;
     this._debugLog("Debug logs are now enabled");
     return this;
@@ -196,7 +196,7 @@ class CacheManager implements ICacheManager {
    * @public
    * @returns {this} The cache manager instance
    */
-  disableDebugLogs(): this {
+  public disableDebugLogs(): this {
     this._showDebug = true;
     this._debugLog("Debug logs are now disabled")
     return this;
@@ -207,7 +207,7 @@ class CacheManager implements ICacheManager {
    * @public
    * @returns {ICacheManagerDataCache} The object which contains the timestamp and data
    */
-  getAllCachedData(): ICacheManagerDataCache {
+  public getAllCachedData(): ICacheManagerDataCache {
     if(this._showDebug){
       this._debugLog(`Call to "getAllCachedData"`)
     };
@@ -219,7 +219,7 @@ class CacheManager implements ICacheManager {
    * @public
    * @returns {ICacheManagerDataCache} The object which contains the timestamp and data
    */
-  getNonExpiredData(): ICacheManagerDataCache {
+  public getNonExpiredData(): ICacheManagerDataCache {
     if(this._showDebug){
       this._debugLog(`Call to "getNonExpiredData"`)
     };
@@ -234,7 +234,7 @@ class CacheManager implements ICacheManager {
    * @public
    * @returns {ICacheManagerDataCache} The object which contains the timestamp and data
    */
-  getExpiredData(): ICacheManagerDataCache {
+  public getExpiredData(): ICacheManagerDataCache {
     if(this._showDebug){
       this._debugLog(`Call to "getExpiredData"`)
     };
@@ -250,7 +250,7 @@ class CacheManager implements ICacheManager {
    * @public
    * @returns {ICacheManagerDataCache} The data which you cached with this key
    */
-  getCacheData(field: string): ICacheManagerDataCache {
+  public getCacheData(field: string): ICacheManagerDataCache {
     if(this._showDebug){
       this._debugLog(`Call to "getCacheData" for field "${field}"`)
       if(!has(this, `_dataCache[${field}]`)){
@@ -267,7 +267,7 @@ class CacheManager implements ICacheManager {
    * @public
    * @returns {ICacheManagerDataCache} The data which has been cached, including it's timestamp
    */
-  setCacheData(field: string, data: any): ICacheManagerDataCache{
+  public setCacheData(field: string, data: any): ICacheManagerDataCache{
     if(this._showDebug){
       this._debugLog(`Call to "setCacheData" for field "${field}"`)
     };
@@ -284,7 +284,7 @@ class CacheManager implements ICacheManager {
    * @public
    * @returns {boolean} Does the data exist in the cache or not
    */
-  cacheDataExists(field: string): boolean {
+  public cacheDataExists(field: string): boolean {
     if(this._showDebug){
       this._debugLog(`Call to "cacheDataExists" for field "${field}"`)
     };
@@ -297,7 +297,7 @@ class CacheManager implements ICacheManager {
    * @public
    * @returns {number} The number, in seconds, since the timestampe was last modified (i.e. since the data was updates or places into the cache)
    */
-  getCacheDataAge(field: string): number {
+  public getCacheDataAge(field: string): number {
     if(this._showDebug){
       this._debugLog(`Call to "getCacheDataAge" for field "${field}"`)
     };
@@ -310,7 +310,7 @@ class CacheManager implements ICacheManager {
    * @public
    * @returns {boolean} Has our cached data expired?
    */
-  hasCacheExpired(field: string): boolean {
+  public hasCacheExpired(field: string): boolean {
     const compareCalculation = new Date().getTime() - this._dataCache[field].timestamp;
     if(this._showDebug){
       this._debugLog(`Call to "hasCacheExpired" for "${field}".`);
@@ -325,7 +325,7 @@ class CacheManager implements ICacheManager {
    * @public
    * @returns {boolean} Is our cached data present, and is it not expired? (true: present and not expired, false, not present or has expired)
    */
-  cacheDataIsValid(field: string): boolean {
+  public cacheDataIsValid(field: string): boolean {
     this._debugLog(`Call to "cacheDataIsValid" for "${field}".`);
     return this.cacheDataExists(field) && this.hasCacheExpired(field);
   }
