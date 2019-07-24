@@ -1,6 +1,6 @@
 # quiCache
 
-![version](https://img.shields.io/badge/version-1.0.3-blue.svg?cacheSeconds=2592000)
+![version](https://img.shields.io/badge/version-1.0.43-blue.svg?cacheSeconds=2592000)
 
 > A simple key-value cache for Javascript applications
 
@@ -27,25 +27,60 @@ When reading data from the cache, simply provide the key.
 
 Keys should be unique as calling `setCacheData()` with a key which already exists will overwrite data already in the cache at that key. A solution to this would be to create a new quiCache instance.
 
+## Interfaces
+
+The following interfaces and enums are exported from quicache to assist in development;
+
+    ICacheManagerDataCache
+    ETimeDuration
+    IConvertStructure
+    ICacheManager
+
 ## API
 
 See [api.md](./api.md) for full details
 
-## Example
+## Examples
 
-    import cache from 'quiCache';
-    const myCache = new cache();
+#### Javascript
 
-    const myCachedDataKey = "openSource";
-    if (!myCache.cacheDataIsValid(myCachedDataKey)){
-      const myObjectToCache = {
-        aString: "abc",
-        aBoolean: true,
-        aNumber: 123
-      };
-      return myCache.setCacheData(myCachedDataKey, myObjectToCache);
-    }
-    return myCache.getCacheData(myCachedDataKey);
+```javascript
+import cache from 'quiCache';
+const myCache = new cache();
+
+const myCachedDataKey = "openSource";
+if (!myCache.cacheDataIsValid(myCachedDataKey)){
+  const myObjectToCache = {
+    aString: "abc",
+    aBoolean: true,
+    aNumber: 123
+  };
+  return myCache.setCacheData(myCachedDataKey, myObjectToCache);
+}
+return myCache.getCacheData(myCachedDataKey);
+```
+
+#### Typescript
+```typescript
+import cache, { ICacheManager } from 'quiCache';
+const myCache:ICacheManager = new cache();
+const myCachedDataKey: string = "openSource";
+const IMyObjectInterface {
+  aString: string
+  aBoolean: boolean
+  aNumber: number
+}
+
+if (!myCache.cacheDataIsValid(myCachedDataKey)){
+  const myObjectToCache: IMyObjectInterface = {
+    aString: "abc",
+    aBoolean: true,
+    aNumber: 123
+  }
+  return myCache.setCacheData(myCachedDataKey, myObjectToCache);
+}
+return myCache.getCacheData(myCachedDataKey);
+```
 
 ## Author(s)
 
