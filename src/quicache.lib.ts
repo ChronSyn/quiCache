@@ -267,13 +267,15 @@ class CacheManager implements ICacheManager {
    * @public
    * @returns {ICacheManagerDataCache} The data which has been cached, including it's timestamp
    */
-  public setCacheData(field: string, data: any): ICacheManagerDataCache{
+  public setCacheData(field: string, data: any = {}): ICacheManagerDataCache{
     if(this._showDebug){
       this._debugLog(`Call to "setCacheData" for field "${field}"`)
     };
+
+    const timestamp = new Date().getTime();
     this._dataCache[field] = {
-      timestamp: new Date().getTime(),
-      data: data
+      timestamp,
+      data
     }
     return this._dataCache[field];
   }
@@ -311,7 +313,10 @@ class CacheManager implements ICacheManager {
    * @returns {boolean} Has our cached data expired?
    */
   public hasCacheExpired(field: string): boolean {
-    const compareCalculation = new Date().getTime() - this._dataCache[field].timestamp;
+    // if (!this.cacheDataExists(field) || this.cacheDataIsValid(field)){
+    //   return true;
+    // }
+    const compareCalculation = new Date().getTime() - (this._dataCache[field].timestamp ?? new Date().getTime());
     if(this._showDebug){
       this._debugLog(`Call to "hasCacheExpired" for "${field}".`);
     };
@@ -326,7 +331,9 @@ class CacheManager implements ICacheManager {
    * @returns {boolean} Is our cached data present, and is it not expired? (true: present and not expired, false, not present or has expired)
    */
   public cacheDataIsValid(field: string): boolean {
-    this._debugLog(`Call to "cacheDataIsValid" for "${field}".`);
+    if (this._showDebug){
+      this._debugLog(`Call to "cacheDataIsValid" for "${field}".`);
+    }
     return this.cacheDataExists(field) && this.hasCacheExpired(field);
   }
 }

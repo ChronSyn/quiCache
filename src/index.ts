@@ -2,8 +2,8 @@ import CacheManager, {
   ICacheManagerDataCache,
   ETimeDuration,
   IConvertStructure,
-  ICacheManager
-} from "./lib/quicache.lib";
+  ICacheManager,
+} from "./quicache.lib";
 
 export {
   ICacheManagerDataCache as ICacheManagerDataCache,

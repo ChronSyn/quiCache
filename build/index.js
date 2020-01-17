@@ -6,8 +6,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-const quicache_lib_1 = __importStar(require("./lib/quicache.lib"));
+exports.__esModule = true;
+var quicache_lib_1 = __importStar(require("./quicache.lib"));
 exports.ETimeDuration = quicache_lib_1.ETimeDuration;
-exports.default = quicache_lib_1.default;
-//# sourceMappingURL=index.js.map
+exports["default"] = quicache_lib_1["default"];

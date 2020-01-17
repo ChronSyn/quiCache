@@ -35,26 +35,29 @@ describe("Check functions", ()=> {
 
   describe("Setting and getting data", () => {
     it("Can set some data on the cache which is returned with timestamp and data properties", () => {
-      expect(myCache.setCacheData('test', cacheDataToCompare)).to.have.property("timestamp").and.to.have.property("data");
+      const X = myCache.setCacheData('test', cacheDataToCompare);
+      expect(X).to.have.property("timestamp");
+      expect(X).to.have.property("data");
     });
 
-    it("Can tell us that data doesn't exist on the cache", () => {
+    it("Can tell us that data doesn't exist on the cache [ cacheDataExists('test_noexist') ]", () => {
       expect(myCache.cacheDataExists('test_noexist')).to.equal(false)
     });
 
-    it("Can tell us that data does exist on the cache", () => {
+    it("Can tell us that data does exist on the cache [ cacheDataExists('test') ]", () => {
       expect(myCache.cacheDataExists('test')).to.equal(true)
     });
 
-    it("Can tell us the cache data age in a number format", () => {
-      expect(myCache.getCacheDataAge('test')).to.be.a("number")
+    it("Can tell us the cache data age in a number format [ getCacheDataAge('test') ]", () => {
+      const X = myCache.getCacheDataAge('test');
+      expect(X).to.be.a("number")
     });
 
-    it("Can retrieve some data which returns a timestamp property", () => {
+    it("Can retrieve some data which returns a timestamp property [ getCacheData('test') ]", () => {
       expect(myCache.getCacheData('test')).to.have.property("timestamp")
     });
 
-    it("Can retrieve some data which returns a data property", () => {
+    it("Can retrieve some data which returns a data property [ getCacheData('test') ]", () => {
       expect(myCache.getCacheData('test')).to.have.property("data")
     });
   })

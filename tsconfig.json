@@ -1,13 +1,16 @@
 {
   "compilerOptions": {
-    "sourceMap": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "module": "commonjs",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "module": "commonjs",
-    "target": "es2017",
-    "baseUrl": ".",
+    "sourceMap": false,
+    "baseUrl": "./",
+    "rootDir": "./src/",
+    "outDir": "./build/",
+    "declarationDir": "./build/",
+    "declaration": true,
     "paths": {
       "@Root/*": ["./*"],
       "@Data/*": ["data/*"],
@@ -16,11 +19,13 @@
       "@Constants/*": ["constants/*"],
       "@Interfaces/*": ["interfaces/*"]
     },
+    "plugins": []
   },
   "include": [
     "./**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "build"
   ]
 }
