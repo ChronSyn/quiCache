@@ -130,6 +130,10 @@ var CacheManager = /** @class */ (function () {
             var deleteTimeout = _this._cacheMaxAgeInSeconds * 1000;
             setTimeout(function () {
                 var _a;
+                // Check if cached data exists before attempting to invoke expiration callback or delete non-existant property
+                if (!_this.cacheDataExists(field)) {
+                    return null;
+                }
                 _this._onCacheDataExpired({
                     data: _this._dataCache[field],
                     cacheName: _this._cacheName,

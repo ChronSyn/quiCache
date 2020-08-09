@@ -243,6 +243,12 @@ class CacheManager implements ICacheManager {
 
     const deleteTimeout = this._cacheMaxAgeInSeconds * 1000;
     setTimeout(() => {
+
+      // Check if cached data exists before attempting to invoke expiration callback or delete non-existant property
+      if (!this.cacheDataExists(field)) {
+        return null;
+      }
+
       this._onCacheDataExpired({
         data: this._dataCache[field],
         cacheName: this._cacheName,
