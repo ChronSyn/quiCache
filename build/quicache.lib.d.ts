@@ -33,6 +33,7 @@ export declare enum QuicacheMessages {
  * @param cacheName cacheName: A 'friendly name' for the cache, used for callback events
  * @param onCacheDataAdd onCacheDataAdd: A callback to run when data is added to the cache
  * @param onCacheDataExpired onCacheDataExpired: A callback to run when data in the cache expires
+ * @param onCacheDataDelete onCacheDataDelete: A callback to run when data in the cache is deleted (does not run when data expires)
  * @param onCacheDataAlreadyExists onCacheDataAlreadyExists: A callback to run when data in the cache already exists with the provided key. Will not trigger if you're using cacheDataExists() as a conditional check
  * @param onCacheNameSet onCacheDataExpired: A callback to run when data in the cache expires
  * @param onCacheMaxAgeSet onCacheDataExpired: A callback to run when data in the cache expires
@@ -41,6 +42,7 @@ interface ICacheConstructorProps {
     cacheMaxAgeInSeconds: number;
     cacheName?: string;
     onCacheDataAdd?: (data: IOnCacheEvent) => void;
+    onCacheDataDelete?: (data: IOnCacheEvent) => void;
     onCacheDataExpired?: (data: IOnCacheEvent) => void;
     onCacheDataAlreadyExists?: (data: IOnCacheEvent) => void;
     onCacheNameSet?: (data: IOnCacheNameSet) => void;
@@ -68,12 +70,14 @@ export interface ICacheManager {
     getAllCachedData: () => void;
     setCacheMaxAge: (cacheMaxAgeInSeconds: number) => void;
     setCacheName: (cacheName: string) => void;
-    getCacheData: (field: string) => ICacheEntry;
+    getCacheData: (field: string) => ICacheEntry | null;
     setCacheData: (field: string, data: any) => ICacheEntry;
+    deleteCacheData: (field: string) => ICacheEntry | null;
     cacheDataExists: (field: string) => boolean;
     getCacheDataAge: (field: string) => number;
     getCacheSize: (field: string) => number;
     getCacheName: () => string;
+    getCacheMaxAge: () => number;
 }
 /**
  * The main CacheManager class
@@ -84,6 +88,7 @@ declare class CacheManager implements ICacheManager {
     private _cacheMaxAgeInSeconds;
     private _onCacheDataExpired;
     private _onCacheDataAdd;
+    private _onCacheDataDelete;
     private _onCacheDataAlreadyExists;
     private _onCacheNameSet;
     private _onCacheMaxAgeSet;
@@ -119,7 +124,7 @@ declare class CacheManager implements ICacheManager {
      * @returns The cached data, or null if it does not exist
      * @public
      */
-    getCacheData: (field: string) => ICacheEntry;
+    getCacheData: (field: string) => ICacheEntry | null;
     /**
      * @description Checks if data with the specified field/key exists in the cache
      * @param field The field/key to check the cache for
@@ -129,10 +134,16 @@ declare class CacheManager implements ICacheManager {
     getCacheDataAge: (field: string) => number;
     /**
      * @description Returns the name of the cache as specified during construction
-     * @returns The name of the cache as specified during construction
+     * @returns The maximum age of data in the cache as specified during construction (or changed using setCacheName)
      * @public
      */
     getCacheName: () => string;
+    /**
+     * @description Returns the maximum age of data in the cache as specified during construction (or changed using setCacheMaxAge)
+     * @returns The maximum age of data in the cache as specified during construction (or changed using setCacheMaxAge)
+     * @public
+     */
+    getCacheMaxAge: () => number;
     /**
      * @description Returns the size of the cache
      * @param field The field/key to check the cache for
@@ -148,5 +159,12 @@ declare class CacheManager implements ICacheManager {
      * @public
      */
     setCacheData: (field: string, data: any) => ICacheEntry;
+    /**
+     * @description Deletes data in the cache that has the specified field/keyt
+     * @param field The field/key of the data to delete
+     * @returns The cached data as it is stored in the cache, or null if the specified key does not exist
+     * @public
+     */
+    deleteCacheData: (field: string) => ICacheEntry | null;
 }
 export default CacheManager;

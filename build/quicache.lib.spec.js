@@ -8,16 +8,21 @@ var chai_1 = require("chai");
 require("mocha");
 var CacheManagerFunctions = [
     "getAllCachedData",
+    "setCacheMaxAge",
+    "setCacheName",
     "getCacheData",
     "setCacheData",
+    "deleteCacheData",
     "cacheDataExists",
     "getCacheDataAge",
-    "enableDebugLogs",
-    "disableDebugLogs"
+    "getCacheSize",
+    "getCacheName"
 ];
+var defaultCacheName = "cacheTest";
+var defaultCacheMaxAge = 120;
 var myCache = new quicache_lib_1["default"]({
-    cacheName: "cacheTest",
-    cacheMaxAgeInSeconds: 120
+    cacheName: defaultCacheName,
+    cacheMaxAgeInSeconds: defaultCacheMaxAge
 });
 var cacheDataToCompare = {
     aString: "aString"
@@ -52,6 +57,27 @@ describe("Check functions", function () {
         });
         it("Can retrieve some data which returns a data property [ getCacheData('test') ]", function () {
             chai_1.expect(myCache.getCacheData('test')).to.have.property("data");
+        });
+        it("Can delete an entry from the cache [ deleteCacheData('test') ===> getCacheData('test') ]", function () {
+            var X = myCache.deleteCacheData('test');
+            chai_1.expect(X).to.have.property("timestamp");
+            chai_1.expect(X).to.have.property("data");
+            var cacheGetShouldFail = myCache.getCacheData('test');
+            chai_1.expect(cacheGetShouldFail).to.be["null"];
+        });
+        it("Can get the cache name [ getCacheName() ]", function () {
+            chai_1.expect(myCache.getCacheName()).to.equal(defaultCacheName);
+        });
+        it("Can get the cache max age [ getCacheMaxAge() ]", function () {
+            chai_1.expect(myCache.getCacheMaxAge()).to.equal(defaultCacheMaxAge);
+        });
+        it("Can set the cache name [setCacheName('test_updated') ==> getCacheName()]", function () {
+            myCache.setCacheName(defaultCacheName + "_updated");
+            chai_1.expect(myCache.getCacheName()).to.equal(defaultCacheName + "_updated");
+        });
+        it("Can set the cache max age [setCacheNameAge(15) ===> getCacheMaxAge()]", function () {
+            myCache.setCacheMaxAge(15);
+            chai_1.expect(myCache.getCacheMaxAge()).to.equal(15);
         });
     });
 });

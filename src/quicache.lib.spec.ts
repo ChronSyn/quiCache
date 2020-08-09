@@ -4,17 +4,22 @@ import "mocha";
 
 const CacheManagerFunctions = [
   "getAllCachedData",
+  "setCacheMaxAge",
+  "setCacheName",
   "getCacheData",
   "setCacheData",
+  "deleteCacheData",
   "cacheDataExists",
   "getCacheDataAge",
-  "enableDebugLogs",
-  "disableDebugLogs"
+  "getCacheSize",
+  "getCacheName"
 ];
 
+const defaultCacheName = "cacheTest";
+const defaultCacheMaxAge = 120;
 const myCache = new cache({
-  cacheName: "cacheTest",
-  cacheMaxAgeInSeconds: 120
+  cacheName: defaultCacheName,
+  cacheMaxAgeInSeconds: defaultCacheMaxAge
 });
 const cacheDataToCompare = {
   aString: "aString"
@@ -58,6 +63,34 @@ describe("Check functions", ()=> {
     it("Can retrieve some data which returns a data property [ getCacheData('test') ]", () => {
       expect(myCache.getCacheData('test')).to.have.property("data")
     });
+
+    it("Can delete an entry from the cache [ deleteCacheData('test') ===> getCacheData('test') ]", () => {
+      const X = myCache.deleteCacheData('test');
+      expect(X).to.have.property("timestamp");
+      expect(X).to.have.property("data");
+      
+      const cacheGetShouldFail = myCache.getCacheData('test');
+      expect(cacheGetShouldFail).to.be.null;
+    });
+
+    it("Can get the cache name [ getCacheName() ]", () => {
+      expect(myCache.getCacheName()).to.equal(defaultCacheName);
+    })
+
+    it("Can get the cache max age [ getCacheMaxAge() ]", () => {
+      expect(myCache.getCacheMaxAge()).to.equal(defaultCacheMaxAge);
+    })
+
+    it("Can set the cache name [setCacheName('test_updated') ==> getCacheName()]", () => {
+      myCache.setCacheName(`${defaultCacheName}_updated`)
+      expect(myCache.getCacheName()).to.equal(`${defaultCacheName}_updated`);
+    })
+
+    it("Can set the cache max age [setCacheNameAge(15) ===> getCacheMaxAge()]", () => {
+      myCache.setCacheMaxAge(15);
+      expect(myCache.getCacheMaxAge()).to.equal(15);
+    })
+
   })
 
 })

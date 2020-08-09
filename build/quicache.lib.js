@@ -80,10 +80,16 @@ var CacheManager = /** @class */ (function () {
         };
         /**
          * @description Returns the name of the cache as specified during construction
-         * @returns The name of the cache as specified during construction
+         * @returns The maximum age of data in the cache as specified during construction (or changed using setCacheName)
          * @public
          */
         this.getCacheName = function () { return _this._cacheName; };
+        /**
+         * @description Returns the maximum age of data in the cache as specified during construction (or changed using setCacheMaxAge)
+         * @returns The maximum age of data in the cache as specified during construction (or changed using setCacheMaxAge)
+         * @public
+         */
+        this.getCacheMaxAge = function () { return _this._cacheMaxAgeInSeconds; };
         /**
          * @description Returns the size of the cache
          * @param field The field/key to check the cache for
@@ -134,6 +140,27 @@ var CacheManager = /** @class */ (function () {
             }, deleteTimeout);
             return _this === null || _this === void 0 ? void 0 : _this._dataCache[field];
         };
+        /**
+         * @description Deletes data in the cache that has the specified field/keyt
+         * @param field The field/key of the data to delete
+         * @returns The cached data as it is stored in the cache, or null if the specified key does not exist
+         * @public
+         */
+        this.deleteCacheData = function (field) {
+            var _a;
+            if (_this.cacheDataExists(field)) {
+                _this._onCacheDataDelete({
+                    data: _this._dataCache[field],
+                    cacheName: _this._cacheName,
+                    expires: (_a = _this.getCacheDataAge(field)) !== null && _a !== void 0 ? _a : -1,
+                    field: field
+                });
+                var cacheEntry = _this === null || _this === void 0 ? void 0 : _this._dataCache[field];
+                delete _this._dataCache[field];
+                return cacheEntry;
+            }
+            return null;
+        };
         if (!(args === null || args === void 0 ? void 0 : args.cacheMaxAgeInSeconds)) {
             console.warn("No cacheMaxAgeInSeconds provided, defaulting to 60 seconds");
         }
@@ -146,6 +173,7 @@ var CacheManager = /** @class */ (function () {
         this._onCacheDataAdd = function (data) { return args.onCacheDataAdd ? args.onCacheDataAdd(data) : {}; };
         this._onCacheDataExpired = function (data) { return args.onCacheDataExpired ? args.onCacheDataExpired(data) : {}; };
         this._onCacheDataAlreadyExists = function (data) { return args.onCacheDataAlreadyExists ? args.onCacheDataAlreadyExists(data) : {}; };
+        this._onCacheDataDelete = function (data) { return args.onCacheDataDelete ? args.onCacheDataDelete(data) : {}; };
         this._onCacheNameSet = function (data) { return args.onCacheNameSet ? args.onCacheNameSet(data) : {}; };
         this._onCacheMaxAgeSet = function (data) { return args.onCacheMaxAgeSet ? args.onCacheMaxAgeSet(data) : {}; };
     }
