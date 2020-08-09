@@ -8,19 +8,17 @@ var chai_1 = require("chai");
 require("mocha");
 var CacheManagerFunctions = [
     "getAllCachedData",
-    "getNonExpiredData",
-    "getExpiredData",
     "getCacheData",
     "setCacheData",
     "cacheDataExists",
     "getCacheDataAge",
-    "hasCacheExpired",
-    "cacheDataIsValid",
-    "setDebug",
     "enableDebugLogs",
     "disableDebugLogs"
 ];
-var myCache = new quicache_lib_1["default"]();
+var myCache = new quicache_lib_1["default"]({
+    cacheName: "cacheTest",
+    cacheMaxAgeInSeconds: 120
+});
 var cacheDataToCompare = {
     aString: "aString"
 };

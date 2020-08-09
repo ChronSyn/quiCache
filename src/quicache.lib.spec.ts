@@ -4,20 +4,18 @@ import "mocha";
 
 const CacheManagerFunctions = [
   "getAllCachedData",
-  "getNonExpiredData",
-  "getExpiredData",
   "getCacheData",
   "setCacheData",
   "cacheDataExists",
   "getCacheDataAge",
-  "hasCacheExpired",
-  "cacheDataIsValid",
-  "setDebug",
   "enableDebugLogs",
   "disableDebugLogs"
 ];
 
-const myCache = new cache();
+const myCache = new cache({
+  cacheName: "cacheTest",
+  cacheMaxAgeInSeconds: 120
+});
 const cacheDataToCompare = {
   aString: "aString"
 };

@@ -1,6 +1,6 @@
 {
   "name": "quicache",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "A simple key-value cache for Javascript applications",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
@@ -9,7 +9,7 @@
     "test-coverage": "nyc --reporter=text mocha -r ts-node/register ./**/*.spec.ts",
     "dev": "tsc --watch",
     "build": "tsc",
-    "build:docs": "jsdoc2md --files ./lib/*.ts --configure ./jsdoc2md.json > ./api.md"
+    "build:docs": "yarn typedoc --out docs src"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,7 @@
   },
   "homepage": "https://github.com/ChronSyn/quicache#readme",
   "dependencies": {
+    "date-fns": "^2.15.0",
     "lodash": "^4.17.14"
   },
   "devDependencies": {
@@ -48,6 +49,7 @@
     "mocha": "^6.1.4",
     "nyc": "^14.1.1",
     "ts-node": "^8.3.0",
-    "typescript": "^3.7.5"
+    "typedoc": "^0.17.8",
+    "typescript": "^3.9.7"
   }
 }

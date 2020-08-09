@@ -1,0 +1,215 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>quicache</title>
+	<meta name="description" content="Documentation for quicache">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">quicache</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1>quicache</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#quicache" id="quicache" style="color: inherit; text-decoration: none;">
+					<h1>quiCache</h1>
+				</a>
+				<blockquote>
+					<p>A simple key-value cache for Javascript applications</p>
+				</blockquote>
+				<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+					<h2>Install</h2>
+				</a>
+				<p><strong>Yarn</strong></p>
+				<p><code>yarn add quiCache</code></p>
+				<p><strong>NPM</strong></p>
+				<p><code>npm i --save quiCache</code></p>
+				<a href="#introduction" id="introduction" style="color: inherit; text-decoration: none;">
+					<h2>Introduction</h2>
+				</a>
+				<p>Version 2 has completely overhauled the library, and is not compatible with prior versions.</p>
+				<p>quiCache provides a key-value structure for data to be stored in. As of version 2.0, you can only specify a cache maximum age in seconds.
+					When adding data to the cache, you specify the key, and the data as arguments to <code>setCacheData()</code>, and quiCache handles everything else.
+				When reading data from the cache, simply provide the key to <code>getCacheData()</code>.</p>
+				<p>As of version 2.0:</p>
+				<ul>
+					<li>The constructor now expects an object with params</li>
+					<li>Cached data will be automatically removed when it expires</li>
+					<li>if a key already exists in the cache, it&#39;s data will <strong>not</strong> be overwritten when calling <code>setCacheData()</code></li>
+				</ul>
+				<a href="#interfaces" id="interfaces" style="color: inherit; text-decoration: none;">
+					<h2>Interfaces</h2>
+				</a>
+				<p>The following interfaces and enums are exported from quicache to assist in development;</p>
+				<pre><code><span class="hljs-attribute">ICacheManagerDataCache
+ICacheManager</span></code></pre>
+				<a href="#api" id="api" style="color: inherit; text-decoration: none;">
+					<h2>API</h2>
+				</a>
+				<p>See the <a href="./docs/index.html">docs folder</a> for full details</p>
+				<a href="#examples" id="examples" style="color: inherit; text-decoration: none;">
+					<h2>Examples</h2>
+				</a>
+				<a href="#javascript" id="javascript" style="color: inherit; text-decoration: none;">
+					<h4>Javascript</h4>
+				</a>
+				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> cache <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;quiCache&#x27;</span>;
+<span class="hljs-keyword">const</span> myCache = <span class="hljs-keyword">new</span> cache({
+  <span class="hljs-attr">cacheMaxAgeInSeconds</span>: <span class="hljs-number">30</span>,
+  <span class="hljs-attr">cacheName</span>: <span class="hljs-string">&quot;myCache&quot;</span>,
+  <span class="hljs-attr">onCacheDataExpired</span>: <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Field <span class="hljs-subst">${data.field}</span> expired in <span class="hljs-subst">${data.cacheName}</span>`</span>),
+  <span class="hljs-attr">onCacheDataAdd</span>: <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Field <span class="hljs-subst">${data.field}</span> added to cache <span class="hljs-subst">${data.cacheName}</span>`</span>),
+  <span class="hljs-attr">onCacheDataAlreadyExists</span>: <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Field <span class="hljs-subst">${data.field}</span> already exists in cache <span class="hljs-subst">${data.cacheName}</span>, and expires in <span class="hljs-subst">${data.expires}</span> seconds`</span>)
+  }
+});
+
+<span class="hljs-keyword">const</span> myCachedDataKey = <span class="hljs-string">&quot;openSource&quot;</span>;
+<span class="hljs-keyword">if</span> (!myCache.cacheDataExists(myCachedDataKey)){
+  <span class="hljs-keyword">const</span> myObjectToCache = {
+    <span class="hljs-attr">aString</span>: <span class="hljs-string">&quot;abc&quot;</span>,
+    <span class="hljs-attr">aBoolean</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-attr">aNumber</span>: <span class="hljs-number">123</span>
+  };
+  <span class="hljs-keyword">return</span> myCache.setCacheData(myCachedDataKey, myObjectToCache);
+}
+<span class="hljs-keyword">return</span> myCache.getCacheData(myCachedDataKey);</code></pre>
+				<a href="#typescript" id="typescript" style="color: inherit; text-decoration: none;">
+					<h4>Typescript</h4>
+				</a>
+				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> cache, { ICacheManager } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;quiCache&#x27;</span>;
+<span class="hljs-keyword">const</span> myCache:ICacheManager = <span class="hljs-keyword">new</span> cache({
+  cacheMaxAgeInSeconds: <span class="hljs-number">30</span>,
+  cacheName: <span class="hljs-string">&quot;myCache&quot;</span>,
+  onCacheDataExpired: <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Field <span class="hljs-subst">${data.field}</span> expired in <span class="hljs-subst">${data.cacheName}</span>`</span>),
+  onCacheDataAdd: <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Field <span class="hljs-subst">${data.field}</span> added to cache <span class="hljs-subst">${data.cacheName}</span>`</span>),
+  onCacheDataAlreadyExists: <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Field <span class="hljs-subst">${data.field}</span> already exists in cache <span class="hljs-subst">${data.cacheName}</span>, and expires in <span class="hljs-subst">${data.expires}</span> seconds`</span>)
+  }
+});
+<span class="hljs-keyword">const</span> myCachedDataKey: <span class="hljs-built_in">string</span> = <span class="hljs-string">&quot;openSource&quot;</span>;
+<span class="hljs-keyword">interface</span> IMyObjectInterface {
+  aString: <span class="hljs-built_in">string</span>
+  aBoolean: <span class="hljs-built_in">boolean</span>
+  aNumber: <span class="hljs-built_in">number</span>
+}
+
+<span class="hljs-keyword">if</span> (!myCache.cacheDataExists(myCachedDataKey)){
+  <span class="hljs-keyword">const</span> myObjectToCache: IMyObjectInterface = {
+    aString: <span class="hljs-string">&quot;abc&quot;</span>,
+    aBoolean: <span class="hljs-literal">true</span>,
+    aNumber: <span class="hljs-number">123</span>
+  }
+  <span class="hljs-keyword">return</span> myCache.setCacheData(myCachedDataKey, myObjectToCache);
+}
+<span class="hljs-keyword">return</span> myCache.getCacheData(myCachedDataKey);</code></pre>
+				<a href="#authors" id="authors" style="color: inherit; text-decoration: none;">
+					<h2>Author(s)</h2>
+				</a>
+				<p>👤 <strong>Scott Pritchard (<a href="https://github.com/ChronSyn">Github</a>, <a href="https://twitter.com/ChronSyn">Twitter</a>)</strong></p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_src_index_.html">&quot;src/index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_src_quicache_lib_.html">&quot;src/quicache.lib&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_src_quicache_lib_spec_.html">&quot;src/quicache.lib.spec&quot;</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
