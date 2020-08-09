@@ -80,15 +80,24 @@
 				<a href="#introduction" id="introduction" style="color: inherit; text-decoration: none;">
 					<h2>Introduction</h2>
 				</a>
-				<p>Version 2 has completely overhauled the library, and is not compatible with prior versions.</p>
-				<p>quiCache provides a key-value structure for data to be stored in. As of version 2.0, you can only specify a cache maximum age in seconds.
-					When adding data to the cache, you specify the key, and the data as arguments to <code>setCacheData()</code>, and quiCache handles everything else.
+				<p>quiCache provides a key-value structure for data to be stored in. When adding data to the cache, you specify the key, and the data as arguments to <code>setCacheData()</code>, and quiCache handles everything else.
 				When reading data from the cache, simply provide the key to <code>getCacheData()</code>.</p>
+				<p>Version 2 has completely overhauled the library, and is not compatible with prior versions. The changes made should drastically simplify working with the library and provide a nicer developer experience.</p>
 				<p>As of version 2.0:</p>
 				<ul>
 					<li>The constructor now expects an object with params</li>
-					<li>Cached data will be automatically removed when it expires</li>
-					<li>if a key already exists in the cache, it&#39;s data will <strong>not</strong> be overwritten when calling <code>setCacheData()</code></li>
+					<li>You can only specify a cache maximum age value - this value is in seconds (e.g. 120 = 2 minutes)</li>
+					<li>The concept of expired data and non-expired data does not exist - data either exists in the cache, or it does not<ul>
+							<li>This means it is no longer possible to retrieve expired data</li>
+						</ul>
+					</li>
+					<li>Cached data will be automatically removed from the cache when it expires</li>
+					<li>If a key already exists in the cache, it&#39;s data will <strong>not</strong> be overwritten when calling <code>setCacheData()</code></li>
+					<li>Support for callbacks when data is added, expired, or attempted to be added by already exists, have been added</li>
+					<li>It is possible to update the cache max age after creation by calling <code>setCacheMaxAge()</code> and passing a value<ul>
+							<li>Values which were added to the cache before this method is called are <strong>not</strong> affected</li>
+						</ul>
+					</li>
 				</ul>
 				<a href="#interfaces" id="interfaces" style="color: inherit; text-decoration: none;">
 					<h2>Interfaces</h2>

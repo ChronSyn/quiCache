@@ -15,16 +15,36 @@ var QuicacheMessages;
  * The main CacheManager class
  */
 var CacheManager = /** @class */ (function () {
-    /**
-     * @param args Fish
-      * @implements ICacheManager instance
-    */
     function CacheManager(args) {
         var _this = this;
         var _a, _b;
         this._dataCache = {};
         this._cacheName = null;
         this._cacheMaxAgeInSeconds = 0;
+        /**
+         * @description Updates the cache max age to a new value
+         * @param cacheMaxAgeInSeconds The new max age for the cache
+         * @public
+         */
+        this.setCacheMaxAge = function (cacheMaxAgeInSeconds) {
+            _this._onCacheMaxAgeSet({
+                oldMaxAgeInSeconds: _this._cacheMaxAgeInSeconds,
+                newMaxAgeInSeconds: cacheMaxAgeInSeconds
+            });
+            _this._cacheMaxAgeInSeconds = cacheMaxAgeInSeconds;
+        };
+        /**
+         * @description Updates the cache max age to a new value
+         * @param cacheName The new max age for the cache
+         * @public
+         */
+        this.setCacheName = function (cacheName) {
+            _this._onCacheNameSet({
+                oldName: _this._cacheName,
+                newName: cacheName
+            });
+            _this._cacheName = cacheName;
+        };
         /**
          * @description Checks if data with the specified field/key exists in the cache
          * @param field The field/key to check the cache for
@@ -126,6 +146,8 @@ var CacheManager = /** @class */ (function () {
         this._onCacheDataAdd = function (data) { return args.onCacheDataAdd ? args.onCacheDataAdd(data) : {}; };
         this._onCacheDataExpired = function (data) { return args.onCacheDataExpired ? args.onCacheDataExpired(data) : {}; };
         this._onCacheDataAlreadyExists = function (data) { return args.onCacheDataAlreadyExists ? args.onCacheDataAlreadyExists(data) : {}; };
+        this._onCacheNameSet = function (data) { return args.onCacheNameSet ? args.onCacheNameSet(data) : {}; };
+        this._onCacheMaxAgeSet = function (data) { return args.onCacheMaxAgeSet ? args.onCacheMaxAgeSet(data) : {}; };
     }
     return CacheManager;
 }());

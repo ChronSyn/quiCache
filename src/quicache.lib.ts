@@ -44,6 +44,8 @@ export enum QuicacheMessages {
  * @param onCacheDataAdd onCacheDataAdd: A callback to run when data is added to the cache
  * @param onCacheDataExpired onCacheDataExpired: A callback to run when data in the cache expires
  * @param onCacheDataAlreadyExists onCacheDataAlreadyExists: A callback to run when data in the cache already exists with the provided key. Will not trigger if you're using cacheDataExists() as a conditional check
+ * @param onCacheNameSet onCacheDataExpired: A callback to run when data in the cache expires
+ * @param onCacheMaxAgeSet onCacheDataExpired: A callback to run when data in the cache expires
  */
 interface ICacheConstructorProps {
   cacheMaxAgeInSeconds: number;
@@ -51,6 +53,18 @@ interface ICacheConstructorProps {
   onCacheDataAdd?: (data: IOnCacheEvent) => void;
   onCacheDataExpired?: (data: IOnCacheEvent) => void;
   onCacheDataAlreadyExists?: (data: IOnCacheEvent) => void;
+  onCacheNameSet?: (data: IOnCacheNameSet) => void;
+  onCacheMaxAgeSet?: (data: IOnCacheMaxAgeSet) => void;
+}
+
+interface IOnCacheNameSet {
+  oldName: string;
+  newName: string;
+}
+
+interface IOnCacheMaxAgeSet {
+  oldMaxAgeInSeconds: number;
+  newMaxAgeInSeconds: number;
 }
 
 interface IOnCacheEvent {
@@ -66,6 +80,8 @@ interface IOnCacheEvent {
 
 export interface ICacheManager {
   getAllCachedData: () => void;
+  setCacheMaxAge: (cacheMaxAgeInSeconds: number) => void;
+  setCacheName: (cacheName: string) => void;
   getCacheData: (field: string) => ICacheEntry;
   setCacheData: (field: string, data: any) => ICacheEntry;
   cacheDataExists: (field: string) => boolean;
@@ -84,11 +100,8 @@ class CacheManager implements ICacheManager {
   private _onCacheDataExpired: (data: IOnCacheEvent) => void;
   private _onCacheDataAdd: (data: IOnCacheEvent) => void;
   private _onCacheDataAlreadyExists: (data: IOnCacheEvent) => void;
-
-  /**
-   * @param args Fish
-    * @implements ICacheManager instance
-  */
+  private _onCacheNameSet: (data: IOnCacheNameSet) => void;
+  private _onCacheMaxAgeSet: (data: IOnCacheMaxAgeSet) => void;
 
   constructor(args: ICacheConstructorProps) {
     if (!args?.cacheMaxAgeInSeconds) {
@@ -103,6 +116,34 @@ class CacheManager implements ICacheManager {
     this._onCacheDataAdd = (data: IOnCacheEvent) => args.onCacheDataAdd ? args.onCacheDataAdd(data) : {};
     this._onCacheDataExpired = (data: IOnCacheEvent) => args.onCacheDataExpired ? args.onCacheDataExpired(data) : {};
     this._onCacheDataAlreadyExists = (data: IOnCacheEvent) => args.onCacheDataAlreadyExists ? args.onCacheDataAlreadyExists(data) : {};
+    this._onCacheNameSet = (data: IOnCacheNameSet) => args.onCacheNameSet ? args.onCacheNameSet(data) : {};
+    this._onCacheMaxAgeSet = (data: IOnCacheMaxAgeSet) => args.onCacheMaxAgeSet ? args.onCacheMaxAgeSet(data) : {};
+  }
+
+  /**
+   * @description Updates the cache max age to a new value
+   * @param cacheMaxAgeInSeconds The new max age for the cache
+   * @public
+   */
+  public setCacheMaxAge = (cacheMaxAgeInSeconds: number): void => {
+    this._onCacheMaxAgeSet({
+      oldMaxAgeInSeconds: this._cacheMaxAgeInSeconds,
+      newMaxAgeInSeconds: cacheMaxAgeInSeconds
+    })
+    this._cacheMaxAgeInSeconds = cacheMaxAgeInSeconds;
+  }
+
+  /**
+   * @description Updates the cache max age to a new value
+   * @param cacheName The new max age for the cache
+   * @public
+   */
+  public setCacheName = (cacheName: string): void => {
+    this._onCacheNameSet({
+      oldName: this._cacheName,
+      newName: cacheName
+    })
+    this._cacheName = cacheName;
   }
   
   /**

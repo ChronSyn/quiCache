@@ -15,17 +15,21 @@
 
 ## Introduction
 
-Version 2 has completely overhauled the library, and is not compatible with prior versions.
-
-quiCache provides a key-value structure for data to be stored in. As of version 2.0, you can only specify a cache maximum age in seconds.
-When adding data to the cache, you specify the key, and the data as arguments to `setCacheData()`, and quiCache handles everything else.
+quiCache provides a key-value structure for data to be stored in. When adding data to the cache, you specify the key, and the data as arguments to `setCacheData()`, and quiCache handles everything else.
 When reading data from the cache, simply provide the key to `getCacheData()`.
+
+Version 2 has completely overhauled the library, and is not compatible with prior versions. The changes made should drastically simplify working with the library and provide a nicer developer experience.
 
 As of version 2.0:
   - The constructor now expects an object with params
-  - Cached data will be automatically removed when it expires
-  - if a key already exists in the cache, it's data will **not** be overwritten when calling `setCacheData()`
-
+  - You can only specify a cache maximum age value - this value is in seconds (e.g. 120 = 2 minutes)
+  - The concept of expired data and non-expired data does not exist - data either exists in the cache, or it does not
+    - This means it is no longer possible to retrieve expired data
+  - Cached data will be automatically removed from the cache when it expires
+  - If a key already exists in the cache, it's data will **not** be overwritten when calling `setCacheData()`
+  - Support for callbacks when data is added, expired, or attempted to be added by already exists, have been added
+  - It is possible to update the cache max age after creation by calling `setCacheMaxAge()` and passing a value
+    - Values which were added to the cache before this method is called are **not** affected
 
 ## Interfaces
 
