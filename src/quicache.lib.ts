@@ -71,7 +71,7 @@ interface IOnCacheMaxAgeSet {
 
 interface IOnCacheEvent {
   /** The key used to map data in the cache */
-  field: string;
+  field: string | number;
   /** The data stored against the field/key */
   data: ICacheEntry;
   /** The cache name as defined during construction */
@@ -84,12 +84,12 @@ export interface ICacheManager {
   getAllCachedData: () => void;
   setCacheMaxAge: (cacheMaxAgeInSeconds: number) => void;
   setCacheName: (cacheName: string) => void;
-  getCacheData: (field: string) => ICacheEntry | null;
-  setCacheData: (field: string, data: any) => ICacheEntry;
-  deleteCacheData: (field: string) => ICacheEntry | null;
-  cacheDataExists: (field: string) => boolean;
-  getCacheDataAge: (field: string) => number;
-  getCacheSize: (field: string) => number;
+  getCacheData: (field: string | number) => ICacheEntry | null;
+  setCacheData: (field: string | number, data: any) => ICacheEntry;
+  deleteCacheData: (field: string | number) => ICacheEntry | null;
+  cacheDataExists: (field: string | number) => boolean;
+  getCacheDataAge: (field: string | number) => number;
+  getCacheSize: (field: string | number) => number;
   getCacheName: () => string;
   getCacheMaxAge: () => number;
 }
@@ -98,7 +98,7 @@ export interface ICacheManager {
  * The main CacheManager class
  */
 class CacheManager implements ICacheManager {
-  private _dataCache: ICacheManagerDataCache = {};
+  private _dataCache: Map<string, ICacheManagerDataCache> = new Map();
   private _cacheName: string = null;
   private _cacheMaxAgeInSeconds: number = 0;
   private _onCacheDataExpired: (data: IOnCacheEvent) => void;
@@ -158,7 +158,7 @@ class CacheManager implements ICacheManager {
    * @returns If true, then some data with the specified field exists in the cache
    * @public
    */
-  public cacheDataExists = (field: string): boolean => {
+  public cacheDataExists = (field: string | number): boolean => {
     return Boolean(this?._dataCache?.[field]) ?? false;
   };
 
@@ -167,7 +167,7 @@ class CacheManager implements ICacheManager {
    * @returns The contents of the cache
    * @public
    */
-  public getAllCachedData = (): ICacheManagerDataCache => this?._dataCache;
+  public getAllCachedData = (): Map<string, ICacheManagerDataCache> => this?._dataCache;
 
   /**
    * @description Returns data for the specified key from the cache
@@ -175,7 +175,7 @@ class CacheManager implements ICacheManager {
    * @returns The cached data, or null if it does not exist
    * @public
    */
-  public getCacheData = (field: string): ICacheEntry | null => this?._dataCache?.[field] ?? null;
+  public getCacheData = (field: string | number): ICacheEntry | null => this?._dataCache?.[field] ?? null;
 
   /**
    * @description Checks if data with the specified field/key exists in the cache
@@ -183,7 +183,7 @@ class CacheManager implements ICacheManager {
    * @returns The age of the cached data with the specified field/key
    * @public
    */
-  public getCacheDataAge = (field: string): number => {
+  public getCacheDataAge = (field: string | number): number => {
     return this?._dataCache?.[field]?.timestamp ? differenceInSeconds(new Date(), new Date(this?._dataCache?.[field].timestamp)) : -1
   }
 
@@ -218,7 +218,7 @@ class CacheManager implements ICacheManager {
    * @returns The cached data as it is stored in the cache
    * @public
    */
-  public setCacheData = (field: string, data: any): ICacheEntry => {
+  public setCacheData = (field: string | number, data: any): ICacheEntry => {
     if (this.cacheDataExists(field)) {
       this._onCacheDataAlreadyExists({
         data: this._dataCache[field],
@@ -266,7 +266,7 @@ class CacheManager implements ICacheManager {
    * @returns The cached data as it is stored in the cache, or null if the specified key does not exist
    * @public
    */
-  public deleteCacheData = (field: string): ICacheEntry | null => {
+  public deleteCacheData = (field: string | number): ICacheEntry | null => {
     if (this.cacheDataExists(field)) {
 
       this._onCacheDataDelete({

@@ -18,7 +18,7 @@ var CacheManager = /** @class */ (function () {
     function CacheManager(args) {
         var _this = this;
         var _a, _b;
-        this._dataCache = {};
+        this._dataCache = new Map();
         this._cacheName = null;
         this._cacheMaxAgeInSeconds = 0;
         /**

@@ -42,6 +42,33 @@ describe("Check functions", function () {
             chai_1.expect(X).to.have.property("timestamp");
             chai_1.expect(X).to.have.property("data");
         });
+        it("Can use a number as a key on cache data", function () {
+            var X = myCache.setCacheData(123456, cacheDataToCompare);
+            chai_1.expect(X).to.have.property("timestamp");
+            chai_1.expect(X).to.have.property("data");
+        });
+        it("Can use NaN as a key on cache data", function () {
+            var X = myCache.setCacheData(NaN, cacheDataToCompare);
+            chai_1.expect(X).to.have.property("timestamp");
+            chai_1.expect(X).to.have.property("data");
+        });
+        it("Can use number with numeric separater as a key on cache data", function () {
+            var X = myCache.setCacheData(123500999, cacheDataToCompare);
+            chai_1.expect(X).to.have.property("timestamp");
+            chai_1.expect(X).to.have.property("data");
+        });
+        it("Can get all cache data", function () {
+            var Y = myCache.getAllCachedData();
+            chai_1.expect(Object.keys(Y)).to.contain.members(["test", "123456", "NaN", "123500999"]);
+            chai_1.expect(Y["test"]).to.have.property("timestamp");
+            chai_1.expect(Y["test"]).to.have.property("data");
+            chai_1.expect(Y[123456]).to.have.property("timestamp");
+            chai_1.expect(Y[123456]).to.have.property("data");
+            chai_1.expect(Y[NaN]).to.have.property("timestamp");
+            chai_1.expect(Y[NaN]).to.have.property("data");
+            chai_1.expect(Y[123500999]).to.have.property("timestamp");
+            chai_1.expect(Y[123500999]).to.have.property("data");
+        });
         it("Can tell us that data doesn't exist on the cache [ cacheDataExists('test_noexist') ]", function () {
             chai_1.expect(myCache.cacheDataExists('test_noexist')).to.equal(false);
         });

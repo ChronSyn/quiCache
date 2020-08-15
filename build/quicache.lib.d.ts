@@ -58,7 +58,7 @@ interface IOnCacheMaxAgeSet {
 }
 interface IOnCacheEvent {
     /** The key used to map data in the cache */
-    field: string;
+    field: string | number;
     /** The data stored against the field/key */
     data: ICacheEntry;
     /** The cache name as defined during construction */
@@ -70,12 +70,12 @@ export interface ICacheManager {
     getAllCachedData: () => void;
     setCacheMaxAge: (cacheMaxAgeInSeconds: number) => void;
     setCacheName: (cacheName: string) => void;
-    getCacheData: (field: string) => ICacheEntry | null;
-    setCacheData: (field: string, data: any) => ICacheEntry;
-    deleteCacheData: (field: string) => ICacheEntry | null;
-    cacheDataExists: (field: string) => boolean;
-    getCacheDataAge: (field: string) => number;
-    getCacheSize: (field: string) => number;
+    getCacheData: (field: string | number) => ICacheEntry | null;
+    setCacheData: (field: string | number, data: any) => ICacheEntry;
+    deleteCacheData: (field: string | number) => ICacheEntry | null;
+    cacheDataExists: (field: string | number) => boolean;
+    getCacheDataAge: (field: string | number) => number;
+    getCacheSize: (field: string | number) => number;
     getCacheName: () => string;
     getCacheMaxAge: () => number;
 }
@@ -111,27 +111,27 @@ declare class CacheManager implements ICacheManager {
      * @returns If true, then some data with the specified field exists in the cache
      * @public
      */
-    cacheDataExists: (field: string) => boolean;
+    cacheDataExists: (field: string | number) => boolean;
     /**
      * @description Returns all cache data
      * @returns The contents of the cache
      * @public
      */
-    getAllCachedData: () => ICacheManagerDataCache;
+    getAllCachedData: () => Map<string, ICacheManagerDataCache>;
     /**
      * @description Returns data for the specified key from the cache
      * @param field The field/key to check the cache for
      * @returns The cached data, or null if it does not exist
      * @public
      */
-    getCacheData: (field: string) => ICacheEntry | null;
+    getCacheData: (field: string | number) => ICacheEntry | null;
     /**
      * @description Checks if data with the specified field/key exists in the cache
      * @param field The field/key to check the cache for
      * @returns The age of the cached data with the specified field/key
      * @public
      */
-    getCacheDataAge: (field: string) => number;
+    getCacheDataAge: (field: string | number) => number;
     /**
      * @description Returns the name of the cache as specified during construction
      * @returns The maximum age of data in the cache as specified during construction (or changed using setCacheName)
@@ -158,13 +158,13 @@ declare class CacheManager implements ICacheManager {
      * @returns The cached data as it is stored in the cache
      * @public
      */
-    setCacheData: (field: string, data: any) => ICacheEntry;
+    setCacheData: (field: string | number, data: any) => ICacheEntry;
     /**
      * @description Deletes data in the cache that has the specified field/keyt
      * @param field The field/key of the data to delete
      * @returns The cached data as it is stored in the cache, or null if the specified key does not exist
      * @public
      */
-    deleteCacheData: (field: string) => ICacheEntry | null;
+    deleteCacheData: (field: string | number) => ICacheEntry | null;
 }
 export default CacheManager;

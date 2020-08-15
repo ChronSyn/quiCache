@@ -94,12 +94,16 @@
 					<li>Enabling and disabling debug has been removed due to addition of callbacks</li>
 					<li>You can now provide a name to your cache, which can be useful for the callbacks</li>
 					<li>Methods to allow changing the cache age and name have been added</li>
+					<li>As of version 2.0.2 map is now used for storing data (instead of an object), meaning it is possible to set keys/fields of any type (instead of just string)<ul>
+							<li>At this time, only strings and numbers are accepted as keys, but supporting all primitive types is planned for a future release</li>
+						</ul>
+					</li>
 				</ul>
 				<a href="#further-notes-on-version-20" id="further-notes-on-version-20" style="color: inherit; text-decoration: none;">
 					<h4>Further notes on version 2.0</h4>
 				</a>
 				<ul>
-					<li>The constructor now expects an object with params</li>
+					<li>The constructor now expects an object with params/arguments</li>
 					<li>You can only specify a cache maximum age value - this value is in seconds (e.g. 120 = 2 minutes)</li>
 					<li>If a key already exists in the cache, it&#39;s data will <strong>not</strong> be overwritten when calling <code>setCacheData()</code></li>
 					<li>It is possible to update the cache max age after creation by calling <code>setCacheMaxAge()</code> and passing a value<ul>
