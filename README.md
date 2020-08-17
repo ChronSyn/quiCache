@@ -6,11 +6,11 @@
 
 **Yarn**
 
-`yarn add quiCache`
+`yarn add quiCache@next`
 
 **NPM**
 
-`npm i --save quiCache`
+`npm i --save quiCache@next`
 
 
 ## Introduction
