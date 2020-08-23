@@ -8,19 +8,22 @@ var chai_1 = require("chai");
 require("mocha");
 var CacheManagerFunctions = [
     "getAllCachedData",
-    "getNonExpiredData",
-    "getExpiredData",
+    "setCacheMaxAge",
+    "setCacheName",
     "getCacheData",
     "setCacheData",
+    "deleteCacheData",
     "cacheDataExists",
     "getCacheDataAge",
-    "hasCacheExpired",
-    "cacheDataIsValid",
-    "setDebug",
-    "enableDebugLogs",
-    "disableDebugLogs"
+    "getCacheSize",
+    "getCacheName"
 ];
-var myCache = new quicache_lib_1["default"]();
+var defaultCacheName = "cacheTest";
+var defaultCacheMaxAge = 120;
+var myCache = new quicache_lib_1["default"]({
+    cacheName: defaultCacheName,
+    cacheMaxAgeInSeconds: defaultCacheMaxAge
+});
 var cacheDataToCompare = {
     aString: "aString"
 };
@@ -39,6 +42,33 @@ describe("Check functions", function () {
             chai_1.expect(X).to.have.property("timestamp");
             chai_1.expect(X).to.have.property("data");
         });
+        it("Can use a number as a key on cache data", function () {
+            var X = myCache.setCacheData(123456, cacheDataToCompare);
+            chai_1.expect(X).to.have.property("timestamp");
+            chai_1.expect(X).to.have.property("data");
+        });
+        it("Can use NaN as a key on cache data", function () {
+            var X = myCache.setCacheData(NaN, cacheDataToCompare);
+            chai_1.expect(X).to.have.property("timestamp");
+            chai_1.expect(X).to.have.property("data");
+        });
+        it("Can use number with numeric separater as a key on cache data", function () {
+            var X = myCache.setCacheData(123500999, cacheDataToCompare);
+            chai_1.expect(X).to.have.property("timestamp");
+            chai_1.expect(X).to.have.property("data");
+        });
+        it("Can get all cache data", function () {
+            var Y = myCache.getAllCachedData();
+            chai_1.expect(Object.keys(Y)).to.contain.members(["test", "123456", "NaN", "123500999"]);
+            chai_1.expect(Y["test"]).to.have.property("timestamp");
+            chai_1.expect(Y["test"]).to.have.property("data");
+            chai_1.expect(Y[123456]).to.have.property("timestamp");
+            chai_1.expect(Y[123456]).to.have.property("data");
+            chai_1.expect(Y[NaN]).to.have.property("timestamp");
+            chai_1.expect(Y[NaN]).to.have.property("data");
+            chai_1.expect(Y[123500999]).to.have.property("timestamp");
+            chai_1.expect(Y[123500999]).to.have.property("data");
+        });
         it("Can tell us that data doesn't exist on the cache [ cacheDataExists('test_noexist') ]", function () {
             chai_1.expect(myCache.cacheDataExists('test_noexist')).to.equal(false);
         });
@@ -54,6 +84,27 @@ describe("Check functions", function () {
         });
         it("Can retrieve some data which returns a data property [ getCacheData('test') ]", function () {
             chai_1.expect(myCache.getCacheData('test')).to.have.property("data");
+        });
+        it("Can delete an entry from the cache [ deleteCacheData('test') ===> getCacheData('test') ]", function () {
+            var X = myCache.deleteCacheData('test');
+            chai_1.expect(X).to.have.property("timestamp");
+            chai_1.expect(X).to.have.property("data");
+            var cacheGetShouldFail = myCache.getCacheData('test');
+            chai_1.expect(cacheGetShouldFail).to.be["null"];
+        });
+        it("Can get the cache name [ getCacheName() ]", function () {
+            chai_1.expect(myCache.getCacheName()).to.equal(defaultCacheName);
+        });
+        it("Can get the cache max age [ getCacheMaxAge() ]", function () {
+            chai_1.expect(myCache.getCacheMaxAge()).to.equal(defaultCacheMaxAge);
+        });
+        it("Can set the cache name [setCacheName('test_updated') ==> getCacheName()]", function () {
+            myCache.setCacheName(defaultCacheName + "_updated");
+            chai_1.expect(myCache.getCacheName()).to.equal(defaultCacheName + "_updated");
+        });
+        it("Can set the cache max age [setCacheNameAge(15) ===> getCacheMaxAge()]", function () {
+            myCache.setCacheMaxAge(15);
+            chai_1.expect(myCache.getCacheMaxAge()).to.equal(15);
         });
     });
 });

@@ -1,16 +1,8 @@
 import has from 'lodash/has';
 import get from 'lodash/get';
-
-export enum ETimeDuration {
-  SECOND = "SECONDS",
-  SECONDS = "SECONDS",
-  MINUTE = "MINUTES",
-  MINUTES = "MINUTES",
-  HOUR = "HOURS",
-  HOURS = "HOURS",
-  DAY = "DAYS",
-  DAYS = "DAYS"
-}
+import isPast from 'date-fns/isPast';
+import subtract from 'date-fns/sub';
+import differenceInSeconds from 'date-fns/differenceInSeconds';
 
 export interface IConvertStructure {
   SECOND: number,
@@ -23,11 +15,20 @@ export interface IConvertStructure {
   DAYS: number
 }
 
-export interface ICacheManagerDataCache {
+/** Properties which are contained in each cache entry */
+/**
+ * @param timestamp timestamp: The time that the entry was added to the cache
+ * @param cacheName data: Contains the data you passed to the cache
+ */
+interface ICacheEntry {
   timestamp: number,
   data: {
     [key: string]: any
   }
+}
+
+export interface ICacheManagerDataCache {
+  [key: string]: ICacheEntry
 }
 
 export enum QuicacheMessages {
@@ -36,305 +37,250 @@ export enum QuicacheMessages {
   MESSAGE_DEBUG_LOGS_ENABLED = "[QUICACHE] Debug logs enabled"
 }
 
-export interface ICacheManager {
-  getAllCachedData: () => void;
-  getNonExpiredData: () => ICacheManagerDataCache;
-  getExpiredData: () => ICacheManagerDataCache;
-  getCacheData: (field: string) => ICacheManagerDataCache;
-  setCacheData: (field: string, data: any) => ICacheManagerDataCache;
-  cacheDataExists: (field: string) => boolean;
-  getCacheDataAge: (field: string, unitOfTime: ETimeDuration) => number;
-  hasCacheExpired: (field: string) => boolean;
-  cacheDataIsValid: (field: string) => boolean;
-  getCacheSize: (field: string) => number;
-  setDebug: () => this;
-  enableDebugLogs: () => this;
-  disableDebugLogs: () => this;
+/** Properties which can be passed to the constructor */
+/**
+ * @param cacheMaxAgeInSeconds cacheMaxAgeInSeconds: The maximum age of a cache entry, in seconds 
+ * @param cacheName cacheName: A 'friendly name' for the cache, used for callback events
+ * @param onCacheDataAdd onCacheDataAdd: A callback to run when data is added to the cache
+ * @param onCacheDataExpired onCacheDataExpired: A callback to run when data in the cache expires
+ * @param onCacheDataDelete onCacheDataDelete: A callback to run when data in the cache is deleted (does not run when data expires)
+ * @param onCacheDataAlreadyExists onCacheDataAlreadyExists: A callback to run when data in the cache already exists with the provided key. Will not trigger if you're using cacheDataExists() as a conditional check
+ * @param onCacheNameSet onCacheDataExpired: A callback to run when data in the cache expires
+ * @param onCacheMaxAgeSet onCacheDataExpired: A callback to run when data in the cache expires
+ */
+interface ICacheConstructorProps {
+  cacheMaxAgeInSeconds: number;
+  cacheName?: string;
+  onCacheDataAdd?: (data: IOnCacheEvent) => void;
+  onCacheDataDelete?: (data: IOnCacheEvent) => void;
+  onCacheDataExpired?: (data: IOnCacheEvent) => void;
+  onCacheDataAlreadyExists?: (data: IOnCacheEvent) => void;
+  onCacheNameSet?: (data: IOnCacheNameSet) => void;
+  onCacheMaxAgeSet?: (data: IOnCacheMaxAgeSet) => void;
 }
 
+interface IOnCacheNameSet {
+  oldName: string;
+  newName: string;
+}
+
+interface IOnCacheMaxAgeSet {
+  oldMaxAgeInSeconds: number;
+  newMaxAgeInSeconds: number;
+}
+
+interface IOnCacheEvent {
+  /** The key used to map data in the cache */
+  field: string | number;
+  /** The data stored against the field/key */
+  data: ICacheEntry;
+  /** The cache name as defined during construction */
+  cacheName: string;
+  /** The time until the data with the specified field/key will expire, in seconds */
+  expires: number;
+}
+
+export interface ICacheManager {
+  getAllCachedData: () => void;
+  setCacheMaxAge: (cacheMaxAgeInSeconds: number) => void;
+  setCacheName: (cacheName: string) => void;
+  getCacheData: (field: string | number) => ICacheEntry | null;
+  setCacheData: (field: string | number, data: any) => ICacheEntry;
+  deleteCacheData: (field: string | number) => ICacheEntry | null;
+  cacheDataExists: (field: string | number) => boolean;
+  getCacheDataAge: (field: string | number) => number;
+  getCacheSize: (field: string | number) => number;
+  getCacheName: () => string;
+  getCacheMaxAge: () => number;
+}
+
+/**
+ * The main CacheManager class
+ */
 class CacheManager implements ICacheManager {
-  private _dataCache;
-  private _cacheMaxAgeValue;
-  private _cacheMaxAgeUnit;
-  private _showDebug;
+  private _dataCache: Map<string, ICacheManagerDataCache> = new Map();
+  private _cacheName: string = null;
+  private _cacheMaxAgeInSeconds: number = 0;
+  private _onCacheDataExpired: (data: IOnCacheEvent) => void;
+  private _onCacheDataAdd: (data: IOnCacheEvent) => void;
+  private _onCacheDataDelete: (data: IOnCacheEvent) => void;
+  private _onCacheDataAlreadyExists: (data: IOnCacheEvent) => void;
+  private _onCacheNameSet: (data: IOnCacheNameSet) => void;
+  private _onCacheMaxAgeSet: (data: IOnCacheMaxAgeSet) => void;
 
-  /**
-   * @description Outputs a debug log message
-   * @param {string} message The debug message to display
-   * @private
-   */
-  private _debugLog(message: string = ""){
-    console.log(`${new Date().getTime()} [QUICACHE] (debug): ${message}`)
-  }
-
-  /**
-   * @description Converts a time to the various ETimeDuration (e.g. seconds to [seconds, minutes, hours, days])
-   * @param {number} inTime The time to convert
-   * @param {ETimeDuration} inFormat The format of inTime
-   * @returns {IConvertStructure} inTime converted to the various formats
-   * @private
-   */
-  private _convert(inTime: number = 30, inFormat: ETimeDuration = ETimeDuration.SECONDS): IConvertStructure {
-    if(inTime < 1){
-      throw new Error(QuicacheMessages.ERROR_TIME_LT1);
+  constructor(args: ICacheConstructorProps) {
+    if (!args?.cacheMaxAgeInSeconds) {
+      console.warn("No cacheMaxAgeInSeconds provided, defaulting to 60 seconds");
     }
-    return (()=>{
-      switch(inFormat){
-        case ETimeDuration.MINUTE:
-        case ETimeDuration.MINUTES:
-          return {
-            SECOND: (inTime * 60) / 1000,
-            SECONDS: (inTime * 60) / 1000,
-            MINUTE: (inTime) / 1000,
-            MINUTES: (inTime) / 100,
-            HOUR: (inTime / 60) / 1000,
-            HOURS: (inTime / 60) / 1000,
-            DAY: (inTime / 60 / 24) / 1000,
-            DAYS: (inTime / 60 / 24) / 1000,
-          }
-        case ETimeDuration.HOUR:
-        case ETimeDuration.HOURS:
-          return {
-            SECOND: (inTime * 60 * 60) / 1000,
-            SECONDS: (inTime * 60 * 60) / 1000,
-            MINUTE: (inTime * 60) / 1000,
-            MINUTES: (inTime * 60) / 1000,
-            HOUR: (inTime) / 1000,
-            HOURS: (inTime) / 1000,
-            DAY: (inTime / 24) / 1000,
-            DAYS: (inTime / 24) / 1000,
-          }
-
-        case ETimeDuration.DAY:
-        case ETimeDuration.DAYS:
-          return {
-            SECOND: (inTime * 60 * 60 * 60) / 1000,
-            SECONDS: (inTime * 60 * 60 * 60) / 1000,
-            MINUTE: (inTime * 60 * 60) / 1000,
-            MINUTES: (inTime * 60 * 60) / 1000,
-            HOUR: (inTime * 24) / 1000,
-            HOURS: (inTime * 24) / 1000,
-            DAY: (inTime) / 1000,
-            DAYS: (inTime) / 1000,
-          }
-        case ETimeDuration.SECOND:
-        case ETimeDuration.SECONDS:
-        default:
-          return {
-            SECOND: (inTime) / 1000,
-            SECONDS: (inTime) / 1000,
-            MINUTE: (inTime / 60) / 1000,
-            MINUTES: (inTime / 60) / 1000,
-            HOUR: (inTime / 60 / 60) / 1000,
-            HOURS: (inTime / 60 / 60) / 1000,
-            DAY: (inTime / 60 / 60 / 24) / 1000,
-            DAYS: (inTime / 60 / 60 / 24) / 1000,
-          }
-      }
-    })();
-  }
-
-  /**
-   * @param {number} _cacheMaxAgeValue The maximum age of the cached data (in _cacheMaxAgeUnit)
-   * @param {number} _cacheMaxAgeUnit The unit which _cacheMaxAgeValue should operate at
-   * @public
-   * @implements {ICacheManager} ICacheManager instance
-   */
-  constructor(_cacheMaxAgeValue: number = 30, _cacheMaxAgeUnit: ETimeDuration = ETimeDuration.SECONDS){
-    this._dataCache  = {};
-    if (_cacheMaxAgeValue < 1){
-      throw new Error(QuicacheMessages.ERROR_TIME_LT1);
+    const fallbackCacheName: string = new Date().getTime().toString();
+    if (!args?.cacheName) {
+      console.warn(`No cacheName provided, falling back to ${fallbackCacheName}`)
     }
-    this._cacheMaxAgeValue = _cacheMaxAgeValue;
-    this._cacheMaxAgeUnit = _cacheMaxAgeUnit;
+    this._cacheMaxAgeInSeconds = args?.cacheMaxAgeInSeconds ?? 60;
+    this._cacheName = args?.cacheName ?? fallbackCacheName;
+    this._onCacheDataAdd = (data: IOnCacheEvent) => args.onCacheDataAdd ? args.onCacheDataAdd(data) : {};
+    this._onCacheDataExpired = (data: IOnCacheEvent) => args.onCacheDataExpired ? args.onCacheDataExpired(data) : {};
+    this._onCacheDataAlreadyExists = (data: IOnCacheEvent) => args.onCacheDataAlreadyExists ? args.onCacheDataAlreadyExists(data) : {};
+    this._onCacheDataDelete = (data: IOnCacheEvent) => args.onCacheDataDelete ? args.onCacheDataDelete(data) : {};
+    this._onCacheNameSet = (data: IOnCacheNameSet) => args.onCacheNameSet ? args.onCacheNameSet(data) : {};
+    this._onCacheMaxAgeSet = (data: IOnCacheMaxAgeSet) => args.onCacheMaxAgeSet ? args.onCacheMaxAgeSet(data) : {};
   }
 
   /**
-   * @description Allows us to identify the size of the entire cache, or a specific field within the cache.
-   * @param {string=} field [Optional] They key of the data we want to check the size of. If not present, will get the size of the entire cache.
+   * @description Updates the cache max age to a new value
+   * @param cacheMaxAgeInSeconds The new max age for the cache
    * @public
-   * @returns {number} The size of the requested cache data in bytes according to `JSON.stringify().length`
    */
-  public getCacheSize(field: string): number {
-    if(!field){
-      if(this._showDebug){
-        this._debugLog(`Call to "getCacheSize" without field, returning full cache size`)
-      };
-      return JSON.stringify(this.getAllCachedData()).length;
-    }
-
-    if(this._showDebug){
-      this._debugLog(`Call to "getCacheSize" for "${field}"`)
-    };
-    return JSON.stringify(this.getCacheData(field)).length;
+  public setCacheMaxAge = (cacheMaxAgeInSeconds: number): void => {
+    this._onCacheMaxAgeSet({
+      oldMaxAgeInSeconds: this._cacheMaxAgeInSeconds,
+      newMaxAgeInSeconds: cacheMaxAgeInSeconds
+    })
+    this._cacheMaxAgeInSeconds = cacheMaxAgeInSeconds;
   }
 
   /**
-   * @description Alias of this.enableDebugLogs. This method is deprecated - please use enableDebugLogs().
+   * @description Updates the cache max age to a new value
+   * @param cacheName The new max age for the cache
    * @public
-   * @returns {this} The cache manager instance
-   * @deprecated This method is deprecated - please use enableDebugLogs()
    */
-  public setDebug(): this{
-    this._debugLog(QuicacheMessages.ERROR_DEPRECATED_USE_ENABLEDEBUGLOGS)
-    return this.enableDebugLogs();
-  }
-
-  /**
-   * @description Enables debug logs.
-   * @public
-   * @returns {this} The cache manager instance
-   */
-  public enableDebugLogs(): this {
-    this._showDebug = true;
-    this._debugLog("Debug logs are now enabled");
-    return this;
-  }
-
-  /**
-   * @description Disables debug logs.
-   * @public
-   * @returns {this} The cache manager instance
-   */
-  public disableDebugLogs(): this {
-    this._showDebug = true;
-    this._debugLog("Debug logs are now disabled")
-    return this;
-  }
-
-  /**
-   * @description Allow retrieval of all cached data
-   * @public
-   * @returns {ICacheManagerDataCache} The object which contains the timestamp and data
-   */
-  public getAllCachedData(): ICacheManagerDataCache {
-    if(this._showDebug){
-      this._debugLog(`Call to "getAllCachedData"`)
-    };
-    return this._dataCache;
-  }
-
-  /**
-   * @description Allow retrieval of all cached data which hasn't expired
-   * @public
-   * @returns {ICacheManagerDataCache} The object which contains the timestamp and data
-   */
-  public getNonExpiredData(): ICacheManagerDataCache {
-    if(this._showDebug){
-      this._debugLog(`Call to "getNonExpiredData"`)
-    };
-    return {
-      timestamp: this._dataCache.timestamp,
-      data: Object.entries(this._dataCache.data).filter(([cacheKey, cacheEntry]) => !this.hasCacheExpired(cacheKey))
-    }
-  }
-
-  /**
-   * @description Allow retrieval of all cached data which has expired
-   * @public
-   * @returns {ICacheManagerDataCache} The object which contains the timestamp and data
-   */
-  public getExpiredData(): ICacheManagerDataCache {
-    if(this._showDebug){
-      this._debugLog(`Call to "getExpiredData"`)
-    };
-    return {
-      timestamp: this._dataCache.timestamp,
-      data: Object.entries(this._dataCache.data).filter(([cacheKey, cacheEntry]) => !this.hasCacheExpired(cacheKey))
-    }
-  }
-
-  /**
-   * @description Retrieves some data from the cache
-   * @param {string} field The key of the data which should be returned
-   * @public
-   * @returns {ICacheManagerDataCache} The data which you cached with this key
-   */
-  public getCacheData(field: string): ICacheManagerDataCache {
-    if(this._showDebug){
-      this._debugLog(`Call to "getCacheData" for field "${field}"`)
-      if(!has(this, `_dataCache[${field}]`)){
-        this._debugLog(`"${field}" not found in cache, proceeding to all cache data`);
-      }
-    };
-    return get(this, `_dataCache[${field}]`, this.getAllCachedData());
-  }
-
-  /**
-   * @description Sets some data in the cache
-   * @param {string} field The key by which data should be stored
-   * @param {any} data The data you wish to store. Can be any type.
-   * @public
-   * @returns {ICacheManagerDataCache} The data which has been cached, including it's timestamp
-   */
-  public setCacheData(field: string, data: any = {}): ICacheManagerDataCache{
-    if(this._showDebug){
-      this._debugLog(`Call to "setCacheData" for field "${field}"`)
-    };
-
-    const timestamp = new Date().getTime();
-    this._dataCache[field] = {
-      timestamp,
-      data
-    }
-    return this._dataCache[field];
-  }
-
-  /**
-   * @description Tells us if some of our data already exists in the cache by passing it's key
-   * @param {string} field The key we want to check for existance of data
-   * @public
-   * @returns {boolean} Does the data exist in the cache or not
-   */
-  public cacheDataExists(field: string): boolean {
-    if(this._showDebug){
-      this._debugLog(`Call to "cacheDataExists" for field "${field}"`)
-    };
-    return has(this, `_dataCache[${field}]`);
+  public setCacheName = (cacheName: string): void => {
+    this._onCacheNameSet({
+      oldName: this._cacheName,
+      newName: cacheName
+    })
+    this._cacheName = cacheName;
   }
   
   /**
-   * @description Tells us how old some of our cached data is
-   * @param {string} field The key of the data we want to check the age of (i.e. it's age in the cache)
+   * @description Checks if data with the specified field/key exists in the cache
+   * @param field The field/key to check the cache for
+   * @returns If true, then some data with the specified field exists in the cache
    * @public
-   * @returns {number} The number, in seconds, since the timestampe was last modified (i.e. since the data was updates or places into the cache)
    */
-  public getCacheDataAge(field: string): number {
-    if(this._showDebug){
-      this._debugLog(`Call to "getCacheDataAge" for field "${field}"`)
-    };
-    return this._convert(new Date().getTime() - this._dataCache[field].timestamp, this._cacheMaxAgeUnit)[this._cacheMaxAgeUnit];
+  public cacheDataExists = (field: string | number): boolean => {
+    return Boolean(this?._dataCache?.[field]) ?? false;
+  };
+
+  /**
+   * @description Returns all cache data
+   * @returns The contents of the cache
+   * @public
+   */
+  public getAllCachedData = (): Map<string, ICacheManagerDataCache> => this?._dataCache;
+
+  /**
+   * @description Returns data for the specified key from the cache
+   * @param field The field/key to check the cache for
+   * @returns The cached data, or null if it does not exist
+   * @public
+   */
+  public getCacheData = (field: string | number): ICacheEntry | null => this?._dataCache?.[field] ?? null;
+
+  /**
+   * @description Checks if data with the specified field/key exists in the cache
+   * @param field The field/key to check the cache for
+   * @returns The age of the cached data with the specified field/key
+   * @public
+   */
+  public getCacheDataAge = (field: string | number): number => {
+    return this?._dataCache?.[field]?.timestamp ? differenceInSeconds(new Date(), new Date(this?._dataCache?.[field].timestamp)) : -1
   }
 
   /**
-   * @description Allows checking if some of our cached data has expired
-   * @param {string} field The key we want to check for expiry (i.e. is it older than our _cacheMaxAgeValue)
+   * @description Returns the name of the cache as specified during construction
+   * @returns The maximum age of data in the cache as specified during construction (or changed using setCacheName)
    * @public
-   * @returns {boolean} Has our cached data expired?
    */
-  public hasCacheExpired(field: string): boolean {
-    // if (!this.cacheDataExists(field) || this.cacheDataIsValid(field)){
-    //   return true;
-    // }
-    const compareCalculation = new Date().getTime() - (this._dataCache[field].timestamp ?? new Date().getTime());
-    if(this._showDebug){
-      this._debugLog(`Call to "hasCacheExpired" for "${field}".`);
-    };
-    const convertedTime = this._convert(compareCalculation, this._cacheMaxAgeUnit);
-    return convertedTime[this._cacheMaxAgeUnit] > this._cacheMaxAgeValue
-  }
+  public getCacheName = (): string => this._cacheName;
 
   /**
-   * @description Checks if some of our cached data is present and not expired
-   * @param {string} field The key we want to check the validity of (i.e. it is present in the cache, and it has not expired)
+   * @description Returns the maximum age of data in the cache as specified during construction (or changed using setCacheMaxAge)
+   * @returns The maximum age of data in the cache as specified during construction (or changed using setCacheMaxAge)
    * @public
-   * @returns {boolean} Is our cached data present, and is it not expired? (true: present and not expired, false, not present or has expired)
    */
-  public cacheDataIsValid(field: string): boolean {
-    if (this._showDebug){
-      this._debugLog(`Call to "cacheDataIsValid" for "${field}".`);
+  public getCacheMaxAge = (): number => this._cacheMaxAgeInSeconds;
+
+  /**
+   * @description Returns the size of the cache
+   * @param field The field/key to check the cache for
+   * @returns The size of the cache in bytes (according to JSON.stringify().length)
+   * @public
+   */
+  public getCacheSize = (): number => {
+    return JSON.stringify(this._dataCache).length;
+  };
+
+  /**
+   * @description Stores some data in the cache if data with that key doesn't already exist, and returns the data from the cache (after storing, if it does not already exist)
+   * @param field The field/key that this data will be mapped to
+   * @param data The data to store against this key
+   * @returns The cached data as it is stored in the cache
+   * @public
+   */
+  public setCacheData = (field: string | number, data: any): ICacheEntry => {
+    if (this.cacheDataExists(field)) {
+      this._onCacheDataAlreadyExists({
+        data: this._dataCache[field],
+        cacheName: this._cacheName,
+        expires: this.getCacheDataAge(field) ?? -1,
+        field
+      })
+      return this?._dataCache[field];
     }
-    return this.cacheDataExists(field) && this.hasCacheExpired(field);
+
+    this._dataCache[field] = {
+      timestamp: new Date().getTime(),
+      data
+    };
+
+    this._onCacheDataAdd({
+      data: this._dataCache[field],
+      cacheName: this._cacheName,
+      expires: this.getCacheDataAge(field) ?? -1,
+      field
+    });
+
+    const deleteTimeout = this._cacheMaxAgeInSeconds * 1000;
+    setTimeout(() => {
+
+      // Check if cached data exists before attempting to invoke expiration callback or delete non-existant property
+      if (!this.cacheDataExists(field)) {
+        return null;
+      }
+
+      this._onCacheDataExpired({
+        data: this._dataCache[field],
+        cacheName: this._cacheName,
+        expires: this.getCacheDataAge(field) ?? -1,
+        field
+      });
+      delete this._dataCache[field];
+    }, deleteTimeout);
+    return this?._dataCache[field];
+  };
+  
+  /**
+   * @description Deletes data in the cache that has the specified field/keyt
+   * @param field The field/key of the data to delete
+   * @returns The cached data as it is stored in the cache, or null if the specified key does not exist
+   * @public
+   */
+  public deleteCacheData = (field: string | number): ICacheEntry | null => {
+    if (this.cacheDataExists(field)) {
+
+      this._onCacheDataDelete({
+        data: this._dataCache[field],
+        cacheName: this._cacheName,
+        expires: this.getCacheDataAge(field) ?? -1,
+        field
+      })
+      const cacheEntry = this?._dataCache[field];
+      delete this._dataCache[field];
+      return cacheEntry;
+    }
+
+    return null;
   }
 }
 
