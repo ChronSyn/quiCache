@@ -2,6 +2,8 @@
 
 > A simple key-value cache for Javascript applications
 
+**[Version 2.0 of QuiCache is now available, featuring several notable improvements!](https://github.com/ChronSyn/quiCache/tree/feature/2.0-release)**
+
 ## Install
 
 **Yarn**
