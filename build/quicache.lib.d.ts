@@ -46,6 +46,7 @@ interface ICacheConstructorProps {
     onCacheDataDelete?: (data: IOnCacheEvent) => void;
     onCacheDataExpired?: (data: IOnCacheEvent) => void;
     onCacheDataAlreadyExists?: (data: IOnCacheEvent) => void;
+    onCacheDataDoesNotAlreadyExist?: (data: IOnCacheDataNotExistEvent) => void;
     onCacheNameSet?: (data: IOnCacheNameSet) => void;
     onCacheMaxAgeSet?: (data: IOnCacheMaxAgeSet) => void;
 }
@@ -56,6 +57,14 @@ interface IOnCacheNameSet {
 interface IOnCacheMaxAgeSet {
     oldMaxAgeInSeconds: number;
     newMaxAgeInSeconds: number;
+}
+interface IOnCacheDataNotExistEvent {
+    /** The key used to map data in the cache */
+    field: string | number;
+    /** The cache name as defined during construction */
+    cacheName: string;
+    /** The time until the data with the specified field/key will expire, in seconds */
+    expires: number;
 }
 interface IOnCacheEvent {
     /** The key used to map data in the cache */
@@ -92,6 +101,7 @@ declare class CacheManager implements ICacheManager {
     private _onCacheDataAccessed;
     private _onCacheDataDelete;
     private _onCacheDataAlreadyExists;
+    private _onCacheDataDoesNotAlreadyExist;
     private _onCacheNameSet;
     private _onCacheMaxAgeSet;
     constructor(args: ICacheConstructorProps);

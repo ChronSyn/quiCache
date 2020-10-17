@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>IOnCacheNameSet | quicache</title>
+	<title>IOnCacheDataNotExistEvent | quicache</title>
 	<meta name="description" content="Documentation for quicache">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -59,10 +59,10 @@
 					<a href="../modules/_src_quicache_lib_.html">&quot;src/quicache.lib&quot;</a>
 				</li>
 				<li>
-					<a href="_src_quicache_lib_.ioncachenameset.html">IOnCacheNameSet</a>
+					<a href="_src_quicache_lib_.ioncachedatanotexistevent.html">IOnCacheDataNotExistEvent</a>
 				</li>
 			</ul>
-			<h1>Interface IOnCacheNameSet</h1>
+			<h1>Interface IOnCacheDataNotExistEvent</h1>
 		</div>
 	</div>
 </header>
@@ -73,7 +73,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">IOnCacheNameSet</span>
+						<span class="target">IOnCacheDataNotExistEvent</span>
 					</li>
 				</ul>
 			</section>
@@ -84,8 +84,9 @@
 						<section class="tsd-index-section tsd-is-not-exported">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="_src_quicache_lib_.ioncachenameset.html#newname" class="tsd-kind-icon">new<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="_src_quicache_lib_.ioncachenameset.html#oldname" class="tsd-kind-icon">old<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="_src_quicache_lib_.ioncachedatanotexistevent.html#cachename" class="tsd-kind-icon">cache<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="_src_quicache_lib_.ioncachedatanotexistevent.html#expires" class="tsd-kind-icon">expires</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="_src_quicache_lib_.ioncachedatanotexistevent.html#field" class="tsd-kind-icon">field</a></li>
 							</ul>
 						</section>
 					</div>
@@ -94,24 +95,49 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-					<a name="newname" class="tsd-anchor"></a>
-					<h3>new<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">new<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="cachename" class="tsd-anchor"></a>
+					<h3>cache<wbr>Name</h3>
+					<div class="tsd-signature tsd-kind-icon">cache<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ChronSyn/quiCache/blob/cc6889f/src/quicache.lib.ts#L66">src/quicache.lib.ts:66</a></li>
+							<li>Defined in <a href="https://github.com/ChronSyn/quiCache/blob/cc6889f/src/quicache.lib.ts#L78">src/quicache.lib.ts:78</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The cache name as defined during construction</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-					<a name="oldname" class="tsd-anchor"></a>
-					<h3>old<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">old<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="expires" class="tsd-anchor"></a>
+					<h3>expires</h3>
+					<div class="tsd-signature tsd-kind-icon">expires<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ChronSyn/quiCache/blob/cc6889f/src/quicache.lib.ts#L65">src/quicache.lib.ts:65</a></li>
+							<li>Defined in <a href="https://github.com/ChronSyn/quiCache/blob/cc6889f/src/quicache.lib.ts#L80">src/quicache.lib.ts:80</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The time until the data with the specified field/key will expire, in seconds</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+					<a name="field" class="tsd-anchor"></a>
+					<h3>field</h3>
+					<div class="tsd-signature tsd-kind-icon">field<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/ChronSyn/quiCache/blob/cc6889f/src/quicache.lib.ts#L76">src/quicache.lib.ts:76</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The key used to map data in the cache</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -155,30 +181,33 @@
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
 						<a href="_src_quicache_lib_.iconvertstructure.html" class="tsd-kind-icon">IConvert<wbr>Structure</a>
 					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
 						<a href="_src_quicache_lib_.ioncachedatanotexistevent.html" class="tsd-kind-icon">IOn<wbr>Cache<wbr>Data<wbr>Not<wbr>Exist<wbr>Event</a>
+						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="_src_quicache_lib_.ioncachedatanotexistevent.html#cachename" class="tsd-kind-icon">cache<wbr>Name</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="_src_quicache_lib_.ioncachedatanotexistevent.html#expires" class="tsd-kind-icon">expires</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
+								<a href="_src_quicache_lib_.ioncachedatanotexistevent.html#field" class="tsd-kind-icon">field</a>
+							</li>
+						</ul>
 					</li>
+				</ul>
+				<ul class="after-current">
 					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
 						<a href="_src_quicache_lib_.ioncacheevent.html" class="tsd-kind-icon">IOn<wbr>Cache<wbr>Event</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
 						<a href="_src_quicache_lib_.ioncachemaxageset.html" class="tsd-kind-icon">IOn<wbr>Cache<wbr>Max<wbr>Age<wbr>Set</a>
 					</li>
-				</ul>
-				<ul class="current">
-					<li class="current tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
 						<a href="_src_quicache_lib_.ioncachenameset.html" class="tsd-kind-icon">IOn<wbr>Cache<wbr>Name<wbr>Set</a>
-						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-								<a href="_src_quicache_lib_.ioncachenameset.html#newname" class="tsd-kind-icon">new<wbr>Name</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-								<a href="_src_quicache_lib_.ioncachenameset.html#oldname" class="tsd-kind-icon">old<wbr>Name</a>
-							</li>
-						</ul>
 					</li>
-				</ul>
-				<ul class="after-current">
 				</ul>
 			</nav>
 		</div>

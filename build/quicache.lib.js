@@ -116,7 +116,7 @@ var CacheManager = /** @class */ (function () {
          * @public
          */
         this.setCacheData = function (field, data) {
-            var _a, _b;
+            var _a, _b, _c;
             if (_this.cacheDataExists(field)) {
                 _this._onCacheDataAlreadyExists({
                     data: _this._dataCache[field],
@@ -126,6 +126,13 @@ var CacheManager = /** @class */ (function () {
                 });
                 return _this === null || _this === void 0 ? void 0 : _this._dataCache[field];
             }
+            else {
+                _this._onCacheDataDoesNotAlreadyExist({
+                    cacheName: _this._cacheName,
+                    expires: (_b = _this.getCacheDataAge(field)) !== null && _b !== void 0 ? _b : -1,
+                    field: field
+                });
+            }
             _this._dataCache[field] = {
                 timestamp: new Date().getTime(),
                 data: data
@@ -133,20 +140,25 @@ var CacheManager = /** @class */ (function () {
             _this._onCacheDataAdd({
                 data: _this._dataCache[field],
                 cacheName: _this._cacheName,
-                expires: (_b = _this.getCacheDataAge(field)) !== null && _b !== void 0 ? _b : -1,
+                expires: (_c = _this.getCacheDataAge(field)) !== null && _c !== void 0 ? _c : -1,
                 field: field
             });
             var deleteTimeout = _this._cacheMaxAgeInSeconds * 1000;
             setTimeout(function () {
-                var _a;
+                var _a, _b;
                 // Check if cached data exists before attempting to invoke expiration callback or delete non-existant property
                 if (!_this.cacheDataExists(field)) {
+                    _this._onCacheDataDoesNotAlreadyExist({
+                        cacheName: _this._cacheName,
+                        expires: (_a = _this.getCacheDataAge(field)) !== null && _a !== void 0 ? _a : -1,
+                        field: field
+                    });
                     return null;
                 }
                 _this._onCacheDataExpired({
                     data: _this._dataCache[field],
                     cacheName: _this._cacheName,
-                    expires: (_a = _this.getCacheDataAge(field)) !== null && _a !== void 0 ? _a : -1,
+                    expires: (_b = _this.getCacheDataAge(field)) !== null && _b !== void 0 ? _b : -1,
                     field: field
                 });
                 delete _this._dataCache[field];
@@ -160,7 +172,7 @@ var CacheManager = /** @class */ (function () {
          * @public
          */
         this.deleteCacheData = function (field) {
-            var _a;
+            var _a, _b;
             if (_this.cacheDataExists(field)) {
                 _this._onCacheDataDelete({
                     data: _this._dataCache[field],
@@ -171,6 +183,13 @@ var CacheManager = /** @class */ (function () {
                 var cacheEntry = _this === null || _this === void 0 ? void 0 : _this._dataCache[field];
                 delete _this._dataCache[field];
                 return cacheEntry;
+            }
+            else {
+                _this._onCacheDataDoesNotAlreadyExist({
+                    cacheName: _this._cacheName,
+                    expires: (_b = _this.getCacheDataAge(field)) !== null && _b !== void 0 ? _b : -1,
+                    field: field
+                });
             }
             return null;
         };
@@ -186,6 +205,7 @@ var CacheManager = /** @class */ (function () {
         this._onCacheDataAdd = function (data) { return args.onCacheDataAdd ? args.onCacheDataAdd(data) : {}; };
         this._onCacheDataExpired = function (data) { return args.onCacheDataExpired ? args.onCacheDataExpired(data) : {}; };
         this._onCacheDataAlreadyExists = function (data) { return args.onCacheDataAlreadyExists ? args.onCacheDataAlreadyExists(data) : {}; };
+        this._onCacheDataDoesNotAlreadyExist = function (data) { return args.onCacheDataDoesNotAlreadyExist ? args.onCacheDataDoesNotAlreadyExist(data) : {}; };
         this._onCacheDataAccessed = function (data) { return args.onCacheDataAccessed ? args.onCacheDataAccessed(data) : {}; };
         this._onCacheDataDelete = function (data) { return args.onCacheDataDelete ? args.onCacheDataDelete(data) : {}; };
         this._onCacheNameSet = function (data) { return args.onCacheNameSet ? args.onCacheNameSet(data) : {}; };

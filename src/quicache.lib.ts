@@ -56,6 +56,7 @@ interface ICacheConstructorProps {
   onCacheDataDelete?: (data: IOnCacheEvent) => void;
   onCacheDataExpired?: (data: IOnCacheEvent) => void;
   onCacheDataAlreadyExists?: (data: IOnCacheEvent) => void;
+  onCacheDataDoesNotAlreadyExist?: (data: IOnCacheDataNotExistEvent) => void;
   onCacheNameSet?: (data: IOnCacheNameSet) => void;
   onCacheMaxAgeSet?: (data: IOnCacheMaxAgeSet) => void;
 }
@@ -68,6 +69,15 @@ interface IOnCacheNameSet {
 interface IOnCacheMaxAgeSet {
   oldMaxAgeInSeconds: number;
   newMaxAgeInSeconds: number;
+}
+
+interface IOnCacheDataNotExistEvent {
+    /** The key used to map data in the cache */
+    field: string | number;
+    /** The cache name as defined during construction */
+    cacheName: string;
+    /** The time until the data with the specified field/key will expire, in seconds */
+    expires: number;
 }
 
 interface IOnCacheEvent {
@@ -107,6 +117,7 @@ class CacheManager implements ICacheManager {
   private _onCacheDataAccessed: (data: IOnCacheEvent) => void;
   private _onCacheDataDelete: (data: IOnCacheEvent) => void;
   private _onCacheDataAlreadyExists: (data: IOnCacheEvent) => void;
+  private _onCacheDataDoesNotAlreadyExist: (data: IOnCacheDataNotExistEvent) => void;
   private _onCacheNameSet: (data: IOnCacheNameSet) => void;
   private _onCacheMaxAgeSet: (data: IOnCacheMaxAgeSet) => void;
 
@@ -123,6 +134,7 @@ class CacheManager implements ICacheManager {
     this._onCacheDataAdd = (data: IOnCacheEvent) => args.onCacheDataAdd ? args.onCacheDataAdd(data) : {};
     this._onCacheDataExpired = (data: IOnCacheEvent) => args.onCacheDataExpired ? args.onCacheDataExpired(data) : {};
     this._onCacheDataAlreadyExists = (data: IOnCacheEvent) => args.onCacheDataAlreadyExists ? args.onCacheDataAlreadyExists(data) : {};
+    this._onCacheDataDoesNotAlreadyExist = (data: IOnCacheDataNotExistEvent) => args.onCacheDataDoesNotAlreadyExist ? args.onCacheDataDoesNotAlreadyExist(data) : {};
     this._onCacheDataAccessed = (data: IOnCacheEvent) => args.onCacheDataAccessed ? args.onCacheDataAccessed(data) : {};
     this._onCacheDataDelete = (data: IOnCacheEvent) => args.onCacheDataDelete ? args.onCacheDataDelete(data) : {};
     this._onCacheNameSet = (data: IOnCacheNameSet) => args.onCacheNameSet ? args.onCacheNameSet(data) : {};
@@ -238,6 +250,12 @@ class CacheManager implements ICacheManager {
         field
       })
       return this?._dataCache[field];
+    } else {
+      this._onCacheDataDoesNotAlreadyExist({
+        cacheName: this._cacheName,
+        expires: this.getCacheDataAge(field) ?? -1,
+        field
+      })
     }
 
     this._dataCache[field] = {
@@ -257,6 +275,11 @@ class CacheManager implements ICacheManager {
 
       // Check if cached data exists before attempting to invoke expiration callback or delete non-existant property
       if (!this.cacheDataExists(field)) {
+        this._onCacheDataDoesNotAlreadyExist({
+          cacheName: this._cacheName,
+          expires: this.getCacheDataAge(field) ?? -1,
+          field
+        })
         return null;
       }
 
@@ -289,6 +312,12 @@ class CacheManager implements ICacheManager {
       const cacheEntry = this?._dataCache[field];
       delete this._dataCache[field];
       return cacheEntry;
+    } else {
+      this._onCacheDataDoesNotAlreadyExist({
+        cacheName: this._cacheName,
+        expires: this.getCacheDataAge(field) ?? -1,
+        field
+      })
     }
 
     return null;

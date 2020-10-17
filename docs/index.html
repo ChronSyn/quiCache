@@ -92,7 +92,11 @@
 					<li>A new method, <code>deleteCacheData()</code>, has been added to allow deletion of any cached data by providing it&#39;s field name / key</li>
 					<li>The concept of expired and non-expired data no longer exists - Cache data now automatically deletes when it expires</li>
 					<li>New optional callbacks in the constructor method have been aded: <code>onCacheDataAdd</code>, <code>onCacheDataDelete</code>, <code>onCacheDataExpired</code>, <code>onCacheDataAlreadyExists</code></li>
-					<li>Version 2.1.0 has added a new optional callback: <code>onCacheDataAccessed</code> - this will trigger when a field is accessed in the cache</li>
+					<li>Version 2.1.2 has added some new optional callback:<ul>
+							<li><code>onCacheDataAccessed</code> - this will trigger when a field is accessed in the cache</li>
+							<li><code>onCacheDataDoesNotAlreadyExist</code> - this will trigger if the specified field is not found in the cache when calling <code>setCacheData</code>, <code>deleteCacheData</code> </li>
+						</ul>
+					</li>
 					<li>Enabling and disabling debug has been removed due to addition of callbacks</li>
 					<li>You can now provide a name to your cache, which can be useful for the callbacks</li>
 					<li>Methods to allow changing the cache age and name have been added</li>
