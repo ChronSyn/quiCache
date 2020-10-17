@@ -68,15 +68,16 @@
 					<h1>quiCache</h1>
 				</a>
 				<blockquote>
-					<p>A simple key-value cache for Javascript applications</p>
+					<p>A key-value cache for Javascript applications</p>
 				</blockquote>
+				<p><strong><a href="https://github.com/ChronSyn/quiCache/tree/feature/2.0-release">Version 2.0 of QuiCache is now available, featuring several notable improvements!</a></strong></p>
 				<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 					<h2>Install</h2>
 				</a>
 				<p><strong>Yarn</strong></p>
-				<p><code>yarn add quiCache</code></p>
+				<p><code>yarn add quiCache@next</code></p>
 				<p><strong>NPM</strong></p>
-				<p><code>npm i --save quiCache</code></p>
+				<p><code>npm i --save quiCache@next</code></p>
 				<a href="#introduction" id="introduction" style="color: inherit; text-decoration: none;">
 					<h2>Introduction</h2>
 				</a>
@@ -91,6 +92,7 @@
 					<li>A new method, <code>deleteCacheData()</code>, has been added to allow deletion of any cached data by providing it&#39;s field name / key</li>
 					<li>The concept of expired and non-expired data no longer exists - Cache data now automatically deletes when it expires</li>
 					<li>New optional callbacks in the constructor method have been aded: <code>onCacheDataAdd</code>, <code>onCacheDataDelete</code>, <code>onCacheDataExpired</code>, <code>onCacheDataAlreadyExists</code></li>
+					<li>Version 2.1.0 has added a new optional callback: <code>onCacheDataAccessed</code> - this will trigger when a field is accessed in the cache</li>
 					<li>Enabling and disabling debug has been removed due to addition of callbacks</li>
 					<li>You can now provide a name to your cache, which can be useful for the callbacks</li>
 					<li>Methods to allow changing the cache age and name have been added</li>
@@ -107,7 +109,7 @@
 					<li>You can only specify a cache maximum age value - this value is in seconds (e.g. 120 = 2 minutes)</li>
 					<li>If a key already exists in the cache, it&#39;s data will <strong>not</strong> be overwritten when calling <code>setCacheData()</code></li>
 					<li>It is possible to update the cache max age after creation by calling <code>setCacheMaxAge()</code> and passing a value<ul>
-							<li>Values which were added to the cache before this method is called are <strong>not</strong> affected</li>
+							<li>Values which were added to the cache before this method is called are <strong>not</strong> affected and will be removed at the end of the originally intended expiry time</li>
 						</ul>
 					</li>
 				</ul>
