@@ -67,7 +67,16 @@ var CacheManager = /** @class */ (function () {
          * @returns The cached data, or null if it does not exist
          * @public
          */
-        this.getCacheData = function (field) { var _a, _b; return (_b = (_a = _this === null || _this === void 0 ? void 0 : _this._dataCache) === null || _a === void 0 ? void 0 : _a[field]) !== null && _b !== void 0 ? _b : null; };
+        this.getCacheData = function (field) {
+            var _a, _b, _c;
+            _this._onCacheDataAccessed({
+                data: _this._dataCache[field],
+                cacheName: _this._cacheName,
+                expires: (_a = _this.getCacheDataAge(field)) !== null && _a !== void 0 ? _a : -1,
+                field: field
+            });
+            return (_c = (_b = _this === null || _this === void 0 ? void 0 : _this._dataCache) === null || _b === void 0 ? void 0 : _b[field]) !== null && _c !== void 0 ? _c : null;
+        };
         /**
          * @description Checks if data with the specified field/key exists in the cache
          * @param field The field/key to check the cache for
@@ -177,6 +186,7 @@ var CacheManager = /** @class */ (function () {
         this._onCacheDataAdd = function (data) { return args.onCacheDataAdd ? args.onCacheDataAdd(data) : {}; };
         this._onCacheDataExpired = function (data) { return args.onCacheDataExpired ? args.onCacheDataExpired(data) : {}; };
         this._onCacheDataAlreadyExists = function (data) { return args.onCacheDataAlreadyExists ? args.onCacheDataAlreadyExists(data) : {}; };
+        this._onCacheDataAccessed = function (data) { return args.onCacheDataAccessed ? args.onCacheDataAccessed(data) : {}; };
         this._onCacheDataDelete = function (data) { return args.onCacheDataDelete ? args.onCacheDataDelete(data) : {}; };
         this._onCacheNameSet = function (data) { return args.onCacheNameSet ? args.onCacheNameSet(data) : {}; };
         this._onCacheMaxAgeSet = function (data) { return args.onCacheMaxAgeSet ? args.onCacheMaxAgeSet(data) : {}; };

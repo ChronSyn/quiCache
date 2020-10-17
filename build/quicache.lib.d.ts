@@ -42,6 +42,7 @@ interface ICacheConstructorProps {
     cacheMaxAgeInSeconds: number;
     cacheName?: string;
     onCacheDataAdd?: (data: IOnCacheEvent) => void;
+    onCacheDataAccessed?: (data: IOnCacheEvent) => void;
     onCacheDataDelete?: (data: IOnCacheEvent) => void;
     onCacheDataExpired?: (data: IOnCacheEvent) => void;
     onCacheDataAlreadyExists?: (data: IOnCacheEvent) => void;
@@ -88,6 +89,7 @@ declare class CacheManager implements ICacheManager {
     private _cacheMaxAgeInSeconds;
     private _onCacheDataExpired;
     private _onCacheDataAdd;
+    private _onCacheDataAccessed;
     private _onCacheDataDelete;
     private _onCacheDataAlreadyExists;
     private _onCacheNameSet;
