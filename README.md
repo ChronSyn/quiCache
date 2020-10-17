@@ -1,6 +1,6 @@
 # quiCache
 
-> A simple key-value cache for Javascript applications
+> A key-value cache for Javascript applications
 
 ## Install
 
@@ -28,6 +28,7 @@ The changes made should drastically simplify working with the library and provid
   * A new method, `deleteCacheData()`, has been added to allow deletion of any cached data by providing it's field name / key
   * The concept of expired and non-expired data no longer exists - Cache data now automatically deletes when it expires
   * New optional callbacks in the constructor method have been aded: `onCacheDataAdd`, `onCacheDataDelete`, `onCacheDataExpired`, `onCacheDataAlreadyExists`
+  * Version 2.1.0 has added a new optional callback: `onCacheDataAccessed` - this will trigger when a field is accessed in the cache
   * Enabling and disabling debug has been removed due to addition of callbacks
   * You can now provide a name to your cache, which can be useful for the callbacks
   * Methods to allow changing the cache age and name have been added
@@ -39,7 +40,7 @@ The changes made should drastically simplify working with the library and provid
   - You can only specify a cache maximum age value - this value is in seconds (e.g. 120 = 2 minutes)
   - If a key already exists in the cache, it's data will **not** be overwritten when calling `setCacheData()`
   - It is possible to update the cache max age after creation by calling `setCacheMaxAge()` and passing a value
-    - Values which were added to the cache before this method is called are **not** affected
+    - Values which were added to the cache before this method is called are **not** affected and will be removed at the end of the originally intended expiry time
 
 ## Interfaces
 

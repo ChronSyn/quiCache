@@ -52,6 +52,7 @@ interface ICacheConstructorProps {
   cacheMaxAgeInSeconds: number;
   cacheName?: string;
   onCacheDataAdd?: (data: IOnCacheEvent) => void;
+  onCacheDataAccessed?: (data: IOnCacheEvent) => void;
   onCacheDataDelete?: (data: IOnCacheEvent) => void;
   onCacheDataExpired?: (data: IOnCacheEvent) => void;
   onCacheDataAlreadyExists?: (data: IOnCacheEvent) => void;
@@ -103,6 +104,7 @@ class CacheManager implements ICacheManager {
   private _cacheMaxAgeInSeconds: number = 0;
   private _onCacheDataExpired: (data: IOnCacheEvent) => void;
   private _onCacheDataAdd: (data: IOnCacheEvent) => void;
+  private _onCacheDataAccessed: (data: IOnCacheEvent) => void;
   private _onCacheDataDelete: (data: IOnCacheEvent) => void;
   private _onCacheDataAlreadyExists: (data: IOnCacheEvent) => void;
   private _onCacheNameSet: (data: IOnCacheNameSet) => void;
@@ -121,6 +123,7 @@ class CacheManager implements ICacheManager {
     this._onCacheDataAdd = (data: IOnCacheEvent) => args.onCacheDataAdd ? args.onCacheDataAdd(data) : {};
     this._onCacheDataExpired = (data: IOnCacheEvent) => args.onCacheDataExpired ? args.onCacheDataExpired(data) : {};
     this._onCacheDataAlreadyExists = (data: IOnCacheEvent) => args.onCacheDataAlreadyExists ? args.onCacheDataAlreadyExists(data) : {};
+    this._onCacheDataAccessed = (data: IOnCacheEvent) => args.onCacheDataAccessed ? args.onCacheDataAccessed(data) : {};
     this._onCacheDataDelete = (data: IOnCacheEvent) => args.onCacheDataDelete ? args.onCacheDataDelete(data) : {};
     this._onCacheNameSet = (data: IOnCacheNameSet) => args.onCacheNameSet ? args.onCacheNameSet(data) : {};
     this._onCacheMaxAgeSet = (data: IOnCacheMaxAgeSet) => args.onCacheMaxAgeSet ? args.onCacheMaxAgeSet(data) : {};
@@ -175,7 +178,15 @@ class CacheManager implements ICacheManager {
    * @returns The cached data, or null if it does not exist
    * @public
    */
-  public getCacheData = (field: string | number): ICacheEntry | null => this?._dataCache?.[field] ?? null;
+  public getCacheData = (field: string | number): ICacheEntry | null => {
+    this._onCacheDataAccessed({
+      data: this._dataCache[field],
+      cacheName: this._cacheName,
+      expires: this.getCacheDataAge(field) ?? -1,
+      field
+    })
+    return this?._dataCache?.[field] ?? null;
+  }
 
   /**
    * @description Checks if data with the specified field/key exists in the cache

@@ -26,7 +26,7 @@ const cacheDataToCompare = {
 };
 
 describe("Check functions", ()=> {
-  CacheManagerFunctions.map((entry: string)=>{
+  CacheManagerFunctions.forEach((entry: string)=>{
     it(`${entry} property exists...`, ()=>{
       expect(myCache).to.have.property(entry);
     });
