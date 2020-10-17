@@ -82,7 +82,7 @@ interface IOnCacheEvent {
 }
 
 export interface ICacheManager {
-  getAllCachedData: () => void;
+  getAllCachedData: () => Map<string, ICacheManagerDataCache>;
   setCacheMaxAge: (cacheMaxAgeInSeconds: number) => void;
   setCacheName: (cacheName: string) => void;
   getCacheData: (field: string | number) => ICacheEntry | null;
