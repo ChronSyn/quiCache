@@ -1,18 +1,14 @@
-import has from 'lodash/has';
-import get from 'lodash/get';
-import isPast from 'date-fns/isPast';
-import subtract from 'date-fns/sub';
-import differenceInSeconds from 'date-fns/differenceInSeconds';
+import differenceInSeconds from "date-fns/differenceInSeconds";
 
 export interface IConvertStructure {
-  SECOND: number,
-  SECONDS: number,
-  MINUTE: number,
-  MINUTES: number,
-  HOUR: number,
-  HOURS: number,
-  DAY: number,
-  DAYS: number
+  SECOND: number;
+  SECONDS: number;
+  MINUTE: number;
+  MINUTES: number;
+  HOUR: number;
+  HOURS: number;
+  DAY: number;
+  DAYS: number;
 }
 
 /** Properties which are contained in each cache entry */
@@ -21,25 +17,25 @@ export interface IConvertStructure {
  * @param cacheName data: Contains the data you passed to the cache
  */
 interface ICacheEntry {
-  timestamp: number,
+  timestamp: number;
   data: {
-    [key: string]: any
-  }
+    [key: string]: any;
+  };
 }
 
 export interface ICacheManagerDataCache {
-  [key: string]: ICacheEntry
+  [key: string]: ICacheEntry;
 }
 
 export enum QuicacheMessages {
   ERROR_TIME_LT1 = "Time can not be less than 1",
   ERROR_DEPRECATED_USE_ENABLEDEBUGLOGS = "This method is deprecated. Please use enableDebugLogs()",
-  MESSAGE_DEBUG_LOGS_ENABLED = "[QUICACHE] Debug logs enabled"
+  MESSAGE_DEBUG_LOGS_ENABLED = "[QUICACHE] Debug logs enabled",
 }
 
 /** Properties which can be passed to the constructor */
 /**
- * @param cacheMaxAgeInSeconds cacheMaxAgeInSeconds: The maximum age of a cache entry, in seconds 
+ * @param cacheMaxAgeInSeconds cacheMaxAgeInSeconds: The maximum age of a cache entry, in seconds
  * @param cacheName cacheName: A 'friendly name' for the cache, used for callback events
  * @param onCacheDataAdd onCacheDataAdd: A callback to run when data is added to the cache
  * @param onCacheDataExpired onCacheDataExpired: A callback to run when data in the cache expires
@@ -72,12 +68,12 @@ interface IOnCacheMaxAgeSet {
 }
 
 interface IOnCacheDataNotExistEvent {
-    /** The key used to map data in the cache */
-    field: string | number;
-    /** The cache name as defined during construction */
-    cacheName: string;
-    /** The time until the data with the specified field/key will expire, in seconds */
-    expires: number;
+  /** The key used to map data in the cache */
+  field: string | number;
+  /** The cache name as defined during construction */
+  cacheName: string;
+  /** The time until the data with the specified field/key will expire, in seconds */
+  expires: number;
 }
 
 interface IOnCacheEvent {
@@ -117,28 +113,44 @@ class CacheManager implements ICacheManager {
   private _onCacheDataAccessed: (data: IOnCacheEvent) => void;
   private _onCacheDataDelete: (data: IOnCacheEvent) => void;
   private _onCacheDataAlreadyExists: (data: IOnCacheEvent) => void;
-  private _onCacheDataDoesNotAlreadyExist: (data: IOnCacheDataNotExistEvent) => void;
+  private _onCacheDataDoesNotAlreadyExist: (
+    data: IOnCacheDataNotExistEvent
+  ) => void;
   private _onCacheNameSet: (data: IOnCacheNameSet) => void;
   private _onCacheMaxAgeSet: (data: IOnCacheMaxAgeSet) => void;
 
   constructor(args: ICacheConstructorProps) {
     if (!args?.cacheMaxAgeInSeconds) {
-      console.warn("No cacheMaxAgeInSeconds provided, defaulting to 60 seconds");
+      console.warn(
+        "No cacheMaxAgeInSeconds provided, defaulting to 60 seconds"
+      );
     }
     const fallbackCacheName: string = new Date().getTime().toString();
     if (!args?.cacheName) {
-      console.warn(`No cacheName provided, falling back to ${fallbackCacheName}`)
+      console.warn(
+        `No cacheName provided, falling back to ${fallbackCacheName}`
+      );
     }
     this._cacheMaxAgeInSeconds = args?.cacheMaxAgeInSeconds ?? 60;
     this._cacheName = args?.cacheName ?? fallbackCacheName;
-    this._onCacheDataAdd = (data: IOnCacheEvent) => args.onCacheDataAdd ? args.onCacheDataAdd(data) : {};
-    this._onCacheDataExpired = (data: IOnCacheEvent) => args.onCacheDataExpired ? args.onCacheDataExpired(data) : {};
-    this._onCacheDataAlreadyExists = (data: IOnCacheEvent) => args.onCacheDataAlreadyExists ? args.onCacheDataAlreadyExists(data) : {};
-    this._onCacheDataDoesNotAlreadyExist = (data: IOnCacheDataNotExistEvent) => args.onCacheDataDoesNotAlreadyExist ? args.onCacheDataDoesNotAlreadyExist(data) : {};
-    this._onCacheDataAccessed = (data: IOnCacheEvent) => args.onCacheDataAccessed ? args.onCacheDataAccessed(data) : {};
-    this._onCacheDataDelete = (data: IOnCacheEvent) => args.onCacheDataDelete ? args.onCacheDataDelete(data) : {};
-    this._onCacheNameSet = (data: IOnCacheNameSet) => args.onCacheNameSet ? args.onCacheNameSet(data) : {};
-    this._onCacheMaxAgeSet = (data: IOnCacheMaxAgeSet) => args.onCacheMaxAgeSet ? args.onCacheMaxAgeSet(data) : {};
+    this._onCacheDataAdd = (data: IOnCacheEvent) =>
+      args.onCacheDataAdd ? args.onCacheDataAdd(data) : {};
+    this._onCacheDataExpired = (data: IOnCacheEvent) =>
+      args.onCacheDataExpired ? args.onCacheDataExpired(data) : {};
+    this._onCacheDataAlreadyExists = (data: IOnCacheEvent) =>
+      args.onCacheDataAlreadyExists ? args.onCacheDataAlreadyExists(data) : {};
+    this._onCacheDataDoesNotAlreadyExist = (data: IOnCacheDataNotExistEvent) =>
+      args.onCacheDataDoesNotAlreadyExist
+        ? args.onCacheDataDoesNotAlreadyExist(data)
+        : {};
+    this._onCacheDataAccessed = (data: IOnCacheEvent) =>
+      args.onCacheDataAccessed ? args.onCacheDataAccessed(data) : {};
+    this._onCacheDataDelete = (data: IOnCacheEvent) =>
+      args.onCacheDataDelete ? args.onCacheDataDelete(data) : {};
+    this._onCacheNameSet = (data: IOnCacheNameSet) =>
+      args.onCacheNameSet ? args.onCacheNameSet(data) : {};
+    this._onCacheMaxAgeSet = (data: IOnCacheMaxAgeSet) =>
+      args.onCacheMaxAgeSet ? args.onCacheMaxAgeSet(data) : {};
   }
 
   /**
@@ -149,10 +161,10 @@ class CacheManager implements ICacheManager {
   public setCacheMaxAge = (cacheMaxAgeInSeconds: number): void => {
     this._onCacheMaxAgeSet({
       oldMaxAgeInSeconds: this._cacheMaxAgeInSeconds,
-      newMaxAgeInSeconds: cacheMaxAgeInSeconds
-    })
+      newMaxAgeInSeconds: cacheMaxAgeInSeconds,
+    });
     this._cacheMaxAgeInSeconds = cacheMaxAgeInSeconds;
-  }
+  };
 
   /**
    * @description Updates the cache max age to a new value
@@ -162,11 +174,11 @@ class CacheManager implements ICacheManager {
   public setCacheName = (cacheName: string): void => {
     this._onCacheNameSet({
       oldName: this._cacheName,
-      newName: cacheName
-    })
+      newName: cacheName,
+    });
     this._cacheName = cacheName;
-  }
-  
+  };
+
   /**
    * @description Checks if data with the specified field/key exists in the cache
    * @param field The field/key to check the cache for
@@ -182,7 +194,8 @@ class CacheManager implements ICacheManager {
    * @returns The contents of the cache
    * @public
    */
-  public getAllCachedData = (): Map<string, ICacheManagerDataCache> => this?._dataCache;
+  public getAllCachedData = (): Map<string, ICacheManagerDataCache> =>
+    this?._dataCache;
 
   /**
    * @description Returns data for the specified key from the cache
@@ -195,10 +208,10 @@ class CacheManager implements ICacheManager {
       data: this._dataCache[field],
       cacheName: this._cacheName,
       expires: this.getCacheDataAge(field) ?? -1,
-      field
-    })
+      field,
+    });
     return this?._dataCache?.[field] ?? null;
-  }
+  };
 
   /**
    * @description Checks if data with the specified field/key exists in the cache
@@ -207,8 +220,13 @@ class CacheManager implements ICacheManager {
    * @public
    */
   public getCacheDataAge = (field: string | number): number => {
-    return this?._dataCache?.[field]?.timestamp ? differenceInSeconds(new Date(), new Date(this?._dataCache?.[field].timestamp)) : -1
-  }
+    return this?._dataCache?.[field]?.timestamp
+      ? differenceInSeconds(
+          new Date(),
+          new Date(this?._dataCache?.[field].timestamp)
+        )
+      : -1;
+  };
 
   /**
    * @description Returns the name of the cache as specified during construction
@@ -247,39 +265,38 @@ class CacheManager implements ICacheManager {
         data: this._dataCache[field],
         cacheName: this._cacheName,
         expires: this.getCacheDataAge(field) ?? -1,
-        field
-      })
+        field,
+      });
       return this?._dataCache[field];
     } else {
       this._onCacheDataDoesNotAlreadyExist({
         cacheName: this._cacheName,
         expires: this.getCacheDataAge(field) ?? -1,
-        field
-      })
+        field,
+      });
     }
 
     this._dataCache[field] = {
       timestamp: new Date().getTime(),
-      data
+      data,
     };
 
     this._onCacheDataAdd({
       data: this._dataCache[field],
       cacheName: this._cacheName,
       expires: this.getCacheDataAge(field) ?? -1,
-      field
+      field,
     });
 
     const deleteTimeout = this._cacheMaxAgeInSeconds * 1000;
     setTimeout(() => {
-
       // Check if cached data exists before attempting to invoke expiration callback or delete non-existant property
       if (!this.cacheDataExists(field)) {
         this._onCacheDataDoesNotAlreadyExist({
           cacheName: this._cacheName,
           expires: this.getCacheDataAge(field) ?? -1,
-          field
-        })
+          field,
+        });
         return null;
       }
 
@@ -287,13 +304,13 @@ class CacheManager implements ICacheManager {
         data: this._dataCache[field],
         cacheName: this._cacheName,
         expires: this.getCacheDataAge(field) ?? -1,
-        field
+        field,
       });
       delete this._dataCache[field];
     }, deleteTimeout);
     return this?._dataCache[field];
   };
-  
+
   /**
    * @description Deletes data in the cache that has the specified field/keyt
    * @param field The field/key of the data to delete
@@ -302,13 +319,12 @@ class CacheManager implements ICacheManager {
    */
   public deleteCacheData = (field: string | number): ICacheEntry | null => {
     if (this.cacheDataExists(field)) {
-
       this._onCacheDataDelete({
         data: this._dataCache[field],
         cacheName: this._cacheName,
         expires: this.getCacheDataAge(field) ?? -1,
-        field
-      })
+        field,
+      });
       const cacheEntry = this?._dataCache[field];
       delete this._dataCache[field];
       return cacheEntry;
@@ -316,12 +332,12 @@ class CacheManager implements ICacheManager {
       this._onCacheDataDoesNotAlreadyExist({
         cacheName: this._cacheName,
         expires: this.getCacheDataAge(field) ?? -1,
-        field
-      })
+        field,
+      });
     }
 
     return null;
-  }
+  };
 }
 
 export default CacheManager;
