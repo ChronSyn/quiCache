@@ -85,7 +85,8 @@ var CacheManager = /** @class */ (function () {
          */
         this.getCacheDataAge = function (field) {
             var _a, _b, _c;
-            return ((_b = (_a = _this === null || _this === void 0 ? void 0 : _this._dataCache) === null || _a === void 0 ? void 0 : _a[field]) === null || _b === void 0 ? void 0 : _b.timestamp) ? differenceInSeconds_1["default"](new Date(), new Date((_c = _this === null || _this === void 0 ? void 0 : _this._dataCache) === null || _c === void 0 ? void 0 : _c[field].timestamp)) : -1;
+            return ((_b = (_a = _this === null || _this === void 0 ? void 0 : _this._dataCache) === null || _a === void 0 ? void 0 : _a[field]) === null || _b === void 0 ? void 0 : _b.timestamp) ? differenceInSeconds_1["default"](new Date(), new Date((_c = _this === null || _this === void 0 ? void 0 : _this._dataCache) === null || _c === void 0 ? void 0 : _c[field].timestamp))
+                : -1;
         };
         /**
          * @description Returns the name of the cache as specified during construction
@@ -202,14 +203,32 @@ var CacheManager = /** @class */ (function () {
         }
         this._cacheMaxAgeInSeconds = (_a = args === null || args === void 0 ? void 0 : args.cacheMaxAgeInSeconds) !== null && _a !== void 0 ? _a : 60;
         this._cacheName = (_b = args === null || args === void 0 ? void 0 : args.cacheName) !== null && _b !== void 0 ? _b : fallbackCacheName;
-        this._onCacheDataAdd = function (data) { return args.onCacheDataAdd ? args.onCacheDataAdd(data) : {}; };
-        this._onCacheDataExpired = function (data) { return args.onCacheDataExpired ? args.onCacheDataExpired(data) : {}; };
-        this._onCacheDataAlreadyExists = function (data) { return args.onCacheDataAlreadyExists ? args.onCacheDataAlreadyExists(data) : {}; };
-        this._onCacheDataDoesNotAlreadyExist = function (data) { return args.onCacheDataDoesNotAlreadyExist ? args.onCacheDataDoesNotAlreadyExist(data) : {}; };
-        this._onCacheDataAccessed = function (data) { return args.onCacheDataAccessed ? args.onCacheDataAccessed(data) : {}; };
-        this._onCacheDataDelete = function (data) { return args.onCacheDataDelete ? args.onCacheDataDelete(data) : {}; };
-        this._onCacheNameSet = function (data) { return args.onCacheNameSet ? args.onCacheNameSet(data) : {}; };
-        this._onCacheMaxAgeSet = function (data) { return args.onCacheMaxAgeSet ? args.onCacheMaxAgeSet(data) : {}; };
+        this._onCacheDataAdd = function (data) {
+            return args.onCacheDataAdd ? args.onCacheDataAdd(data) : {};
+        };
+        this._onCacheDataExpired = function (data) {
+            return args.onCacheDataExpired ? args.onCacheDataExpired(data) : {};
+        };
+        this._onCacheDataAlreadyExists = function (data) {
+            return args.onCacheDataAlreadyExists ? args.onCacheDataAlreadyExists(data) : {};
+        };
+        this._onCacheDataDoesNotAlreadyExist = function (data) {
+            return args.onCacheDataDoesNotAlreadyExist
+                ? args.onCacheDataDoesNotAlreadyExist(data)
+                : {};
+        };
+        this._onCacheDataAccessed = function (data) {
+            return args.onCacheDataAccessed ? args.onCacheDataAccessed(data) : {};
+        };
+        this._onCacheDataDelete = function (data) {
+            return args.onCacheDataDelete ? args.onCacheDataDelete(data) : {};
+        };
+        this._onCacheNameSet = function (data) {
+            return args.onCacheNameSet ? args.onCacheNameSet(data) : {};
+        };
+        this._onCacheMaxAgeSet = function (data) {
+            return args.onCacheMaxAgeSet ? args.onCacheMaxAgeSet(data) : {};
+        };
     }
     return CacheManager;
 }());
