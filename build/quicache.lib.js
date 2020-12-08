@@ -28,6 +28,7 @@ var CacheManager = /** @class */ (function () {
          */
         this.setCacheMaxAge = function (cacheMaxAgeInSeconds) {
             _this._onCacheMaxAgeSet({
+                cacheName: _this._cacheName,
                 oldMaxAgeInSeconds: _this._cacheMaxAgeInSeconds,
                 newMaxAgeInSeconds: cacheMaxAgeInSeconds
             });

@@ -55,6 +55,7 @@ interface IOnCacheNameSet {
     newName: string;
 }
 interface IOnCacheMaxAgeSet {
+    cacheName: string;
     oldMaxAgeInSeconds: number;
     newMaxAgeInSeconds: number;
 }
