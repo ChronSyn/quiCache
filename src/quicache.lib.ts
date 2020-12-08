@@ -63,6 +63,7 @@ interface IOnCacheNameSet {
 }
 
 interface IOnCacheMaxAgeSet {
+  cacheName: string;
   oldMaxAgeInSeconds: number;
   newMaxAgeInSeconds: number;
 }
@@ -160,6 +161,7 @@ class CacheManager implements ICacheManager {
    */
   public setCacheMaxAge = (cacheMaxAgeInSeconds: number): void => {
     this._onCacheMaxAgeSet({
+      cacheName: this._cacheName,
       oldMaxAgeInSeconds: this._cacheMaxAgeInSeconds,
       newMaxAgeInSeconds: cacheMaxAgeInSeconds,
     });
