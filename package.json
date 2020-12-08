@@ -1,6 +1,6 @@
 {
   "name": "quicache",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "A simple key-value cache for Javascript applications",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",

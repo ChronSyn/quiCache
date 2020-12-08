@@ -197,11 +197,11 @@ var CacheManager = /** @class */ (function () {
             return null;
         };
         this._showDebugMessages = (_a = args === null || args === void 0 ? void 0 : args.showDebugMessages) !== null && _a !== void 0 ? _a : false;
-        if (!(args === null || args === void 0 ? void 0 : args.cacheMaxAgeInSeconds) && !this._showDebugMessages) {
+        if (!(args === null || args === void 0 ? void 0 : args.cacheMaxAgeInSeconds) && this._showDebugMessages) {
             console.warn("No cacheMaxAgeInSeconds provided, defaulting to 60 seconds");
         }
         var fallbackCacheName = new Date().getTime().toString();
-        if (!(args === null || args === void 0 ? void 0 : args.cacheName) && !this._showDebugMessages) {
+        if (!(args === null || args === void 0 ? void 0 : args.cacheName) && this._showDebugMessages) {
             console.warn("No cacheName provided, falling back to " + fallbackCacheName);
         }
         this._cacheMaxAgeInSeconds = (_b = args === null || args === void 0 ? void 0 : args.cacheMaxAgeInSeconds) !== null && _b !== void 0 ? _b : 60;

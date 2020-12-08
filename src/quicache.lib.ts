@@ -125,13 +125,13 @@ class CacheManager implements ICacheManager {
 
   constructor(args: ICacheConstructorProps) {
     this._showDebugMessages = args?.showDebugMessages ?? false;
-    if (!args?.cacheMaxAgeInSeconds && !this._showDebugMessages) {
+    if (!args?.cacheMaxAgeInSeconds && this._showDebugMessages) {
       console.warn(
         "No cacheMaxAgeInSeconds provided, defaulting to 60 seconds"
       );
     }
     const fallbackCacheName: string = new Date().getTime().toString();
-    if (!args?.cacheName && !this._showDebugMessages) {
+    if (!args?.cacheName && this._showDebugMessages) {
       console.warn(
         `No cacheName provided, falling back to ${fallbackCacheName}`
       );
