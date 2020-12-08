@@ -17,9 +17,10 @@ var QuicacheMessages;
 var CacheManager = /** @class */ (function () {
     function CacheManager(args) {
         var _this = this;
-        var _a, _b;
+        var _a, _b, _c;
         this._dataCache = new Map();
         this._cacheName = null;
+        this._showDebugMessages = false;
         this._cacheMaxAgeInSeconds = 0;
         /**
          * @description Updates the cache max age to a new value
@@ -195,15 +196,16 @@ var CacheManager = /** @class */ (function () {
             }
             return null;
         };
-        if (!(args === null || args === void 0 ? void 0 : args.cacheMaxAgeInSeconds)) {
+        this._showDebugMessages = (_a = args === null || args === void 0 ? void 0 : args.showDebugMessages) !== null && _a !== void 0 ? _a : false;
+        if (!(args === null || args === void 0 ? void 0 : args.cacheMaxAgeInSeconds) && !this._showDebugMessages) {
             console.warn("No cacheMaxAgeInSeconds provided, defaulting to 60 seconds");
         }
         var fallbackCacheName = new Date().getTime().toString();
-        if (!(args === null || args === void 0 ? void 0 : args.cacheName)) {
+        if (!(args === null || args === void 0 ? void 0 : args.cacheName) && !this._showDebugMessages) {
             console.warn("No cacheName provided, falling back to " + fallbackCacheName);
         }
-        this._cacheMaxAgeInSeconds = (_a = args === null || args === void 0 ? void 0 : args.cacheMaxAgeInSeconds) !== null && _a !== void 0 ? _a : 60;
-        this._cacheName = (_b = args === null || args === void 0 ? void 0 : args.cacheName) !== null && _b !== void 0 ? _b : fallbackCacheName;
+        this._cacheMaxAgeInSeconds = (_b = args === null || args === void 0 ? void 0 : args.cacheMaxAgeInSeconds) !== null && _b !== void 0 ? _b : 60;
+        this._cacheName = (_c = args === null || args === void 0 ? void 0 : args.cacheName) !== null && _c !== void 0 ? _c : fallbackCacheName;
         this._onCacheDataAdd = function (data) {
             return args.onCacheDataAdd ? args.onCacheDataAdd(data) : {};
         };

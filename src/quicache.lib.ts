@@ -37,6 +37,7 @@ export enum QuicacheMessages {
 /**
  * @param cacheMaxAgeInSeconds cacheMaxAgeInSeconds: The maximum age of a cache entry, in seconds
  * @param cacheName cacheName: A 'friendly name' for the cache, used for callback events
+ * @param showDebugMessages showDebugMessages: Whether to send console messages from Quicache (e.g. when initializing the cache with cacheName set to null, it will show a warning)
  * @param onCacheDataAdd onCacheDataAdd: A callback to run when data is added to the cache
  * @param onCacheDataExpired onCacheDataExpired: A callback to run when data in the cache expires
  * @param onCacheDataDelete onCacheDataDelete: A callback to run when data in the cache is deleted (does not run when data expires)
@@ -47,6 +48,7 @@ export enum QuicacheMessages {
 interface ICacheConstructorProps {
   cacheMaxAgeInSeconds: number;
   cacheName?: string;
+  showDebugMessages?: boolean;
   onCacheDataAdd?: (data: IOnCacheEvent) => void;
   onCacheDataAccessed?: (data: IOnCacheEvent) => void;
   onCacheDataDelete?: (data: IOnCacheEvent) => void;
@@ -108,6 +110,7 @@ export interface ICacheManager {
 class CacheManager implements ICacheManager {
   private _dataCache: Map<string, ICacheManagerDataCache> = new Map();
   private _cacheName: string = null;
+  private _showDebugMessages: boolean = false;
   private _cacheMaxAgeInSeconds: number = 0;
   private _onCacheDataExpired: (data: IOnCacheEvent) => void;
   private _onCacheDataAdd: (data: IOnCacheEvent) => void;
@@ -121,13 +124,14 @@ class CacheManager implements ICacheManager {
   private _onCacheMaxAgeSet: (data: IOnCacheMaxAgeSet) => void;
 
   constructor(args: ICacheConstructorProps) {
-    if (!args?.cacheMaxAgeInSeconds) {
+    this._showDebugMessages = args?.showDebugMessages ?? false;
+    if (!args?.cacheMaxAgeInSeconds && !this._showDebugMessages) {
       console.warn(
         "No cacheMaxAgeInSeconds provided, defaulting to 60 seconds"
       );
     }
     const fallbackCacheName: string = new Date().getTime().toString();
-    if (!args?.cacheName) {
+    if (!args?.cacheName && !this._showDebugMessages) {
       console.warn(
         `No cacheName provided, falling back to ${fallbackCacheName}`
       );

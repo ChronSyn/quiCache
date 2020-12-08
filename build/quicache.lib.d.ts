@@ -31,6 +31,7 @@ export declare enum QuicacheMessages {
 /**
  * @param cacheMaxAgeInSeconds cacheMaxAgeInSeconds: The maximum age of a cache entry, in seconds
  * @param cacheName cacheName: A 'friendly name' for the cache, used for callback events
+ * @param showDebugMessages showDebugMessages: Whether to send console messages from Quicache (e.g. when initializing the cache with cacheName set to null, it will show a warning)
  * @param onCacheDataAdd onCacheDataAdd: A callback to run when data is added to the cache
  * @param onCacheDataExpired onCacheDataExpired: A callback to run when data in the cache expires
  * @param onCacheDataDelete onCacheDataDelete: A callback to run when data in the cache is deleted (does not run when data expires)
@@ -41,6 +42,7 @@ export declare enum QuicacheMessages {
 interface ICacheConstructorProps {
     cacheMaxAgeInSeconds: number;
     cacheName?: string;
+    showDebugMessages?: boolean;
     onCacheDataAdd?: (data: IOnCacheEvent) => void;
     onCacheDataAccessed?: (data: IOnCacheEvent) => void;
     onCacheDataDelete?: (data: IOnCacheEvent) => void;
@@ -96,6 +98,7 @@ export interface ICacheManager {
 declare class CacheManager implements ICacheManager {
     private _dataCache;
     private _cacheName;
+    private _showDebugMessages;
     private _cacheMaxAgeInSeconds;
     private _onCacheDataExpired;
     private _onCacheDataAdd;
