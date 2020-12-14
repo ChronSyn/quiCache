@@ -13,14 +13,12 @@ export interface IConvertStructure {
  * @param timestamp timestamp: The time that the entry was added to the cache
  * @param cacheName data: Contains the data you passed to the cache
  */
-interface ICacheEntry {
+interface ICacheEntry<T> {
     timestamp: number;
-    data: {
-        [key: string]: any;
-    };
+    data: T;
 }
-export interface ICacheManagerDataCache {
-    [key: string]: ICacheEntry;
+export interface ICacheManagerDataCache<T> {
+    [key: string]: ICacheEntry<T>;
 }
 export declare enum QuicacheMessages {
     ERROR_TIME_LT1 = "Time can not be less than 1",
@@ -39,15 +37,15 @@ export declare enum QuicacheMessages {
  * @param onCacheNameSet onCacheDataExpired: A callback to run when data in the cache expires
  * @param onCacheMaxAgeSet onCacheDataExpired: A callback to run when data in the cache expires
  */
-interface ICacheConstructorProps {
+interface ICacheConstructorProps<T> {
     cacheMaxAgeInSeconds: number;
     cacheName?: string;
     showDebugMessages?: boolean;
-    onCacheDataAdd?: (data: IOnCacheEvent) => void;
-    onCacheDataAccessed?: (data: IOnCacheEvent) => void;
-    onCacheDataDelete?: (data: IOnCacheEvent) => void;
-    onCacheDataExpired?: (data: IOnCacheEvent) => void;
-    onCacheDataAlreadyExists?: (data: IOnCacheEvent) => void;
+    onCacheDataAdd?: (data: IOnCacheEvent<T>) => void;
+    onCacheDataAccessed?: (data: IOnCacheEvent<T>) => void;
+    onCacheDataDelete?: (data: IOnCacheEvent<T>) => void;
+    onCacheDataExpired?: (data: IOnCacheEvent<T>) => void;
+    onCacheDataAlreadyExists?: (data: IOnCacheEvent<T>) => void;
     onCacheDataDoesNotAlreadyExist?: (data: IOnCacheDataNotExistEvent) => void;
     onCacheNameSet?: (data: IOnCacheNameSet) => void;
     onCacheMaxAgeSet?: (data: IOnCacheMaxAgeSet) => void;
@@ -69,23 +67,23 @@ interface IOnCacheDataNotExistEvent {
     /** The time until the data with the specified field/key will expire, in seconds */
     expires: number;
 }
-interface IOnCacheEvent {
+interface IOnCacheEvent<T> {
     /** The key used to map data in the cache */
     field: string | number;
     /** The data stored against the field/key */
-    data: ICacheEntry;
+    data: ICacheEntry<T>;
     /** The cache name as defined during construction */
     cacheName: string;
     /** The time until the data with the specified field/key will expire, in seconds */
     expires: number;
 }
-export interface ICacheManager {
-    getAllCachedData: () => Map<string, ICacheManagerDataCache>;
+export interface ICacheManager<T> {
+    getAllCachedData: () => Map<string | number, ICacheManagerDataCache<T>>;
     setCacheMaxAge: (cacheMaxAgeInSeconds: number) => void;
     setCacheName: (cacheName: string) => void;
-    getCacheData: (field: string | number) => ICacheEntry | null;
-    setCacheData: (field: string | number, data: any) => ICacheEntry;
-    deleteCacheData: (field: string | number) => ICacheEntry | null;
+    getCacheData: (field: string | number) => ICacheEntry<T> | null;
+    setCacheData: (field: string | number, data: T) => ICacheEntry<T>;
+    deleteCacheData: (field: string | number) => ICacheEntry<T> | null;
     cacheDataExists: (field: string | number) => boolean;
     getCacheDataAge: (field: string | number) => number;
     getCacheSize: (field: string | number) => number;
@@ -95,7 +93,7 @@ export interface ICacheManager {
 /**
  * The main CacheManager class
  */
-declare class CacheManager implements ICacheManager {
+declare class CacheManager<T> implements ICacheManager<T> {
     private _dataCache;
     private _cacheName;
     private _showDebugMessages;
@@ -108,7 +106,7 @@ declare class CacheManager implements ICacheManager {
     private _onCacheDataDoesNotAlreadyExist;
     private _onCacheNameSet;
     private _onCacheMaxAgeSet;
-    constructor(args: ICacheConstructorProps);
+    constructor(args: ICacheConstructorProps<T>);
     /**
      * @description Updates the cache max age to a new value
      * @param cacheMaxAgeInSeconds The new max age for the cache
@@ -133,14 +131,14 @@ declare class CacheManager implements ICacheManager {
      * @returns The contents of the cache
      * @public
      */
-    getAllCachedData: () => Map<string, ICacheManagerDataCache>;
+    getAllCachedData: () => Map<string, ICacheManagerDataCache<T>>;
     /**
      * @description Returns data for the specified key from the cache
      * @param field The field/key to check the cache for
      * @returns The cached data, or null if it does not exist
      * @public
      */
-    getCacheData: (field: string | number) => ICacheEntry | null;
+    getCacheData: (field: string | number) => ICacheEntry<T> | null;
     /**
      * @description Checks if data with the specified field/key exists in the cache
      * @param field The field/key to check the cache for
@@ -174,13 +172,13 @@ declare class CacheManager implements ICacheManager {
      * @returns The cached data as it is stored in the cache
      * @public
      */
-    setCacheData: (field: string | number, data: any) => ICacheEntry;
+    setCacheData: (field: string | number, data: any) => ICacheEntry<T>;
     /**
      * @description Deletes data in the cache that has the specified field/keyt
      * @param field The field/key of the data to delete
      * @returns The cached data as it is stored in the cache, or null if the specified key does not exist
      * @public
      */
-    deleteCacheData: (field: string | number) => ICacheEntry | null;
+    deleteCacheData: (field: string | number) => ICacheEntry<T> | null;
 }
 export default CacheManager;

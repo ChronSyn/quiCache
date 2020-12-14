@@ -68,21 +68,54 @@
 					<h1>quiCache</h1>
 				</a>
 				<blockquote>
-					<p>A key-value cache for Javascript applications</p>
+					<p>An in-memory key-value cache for Javascript and Typescript applications</p>
 				</blockquote>
-				<p><strong><a href="https://github.com/ChronSyn/quiCache/tree/feature/2.0-release">Version 2.0 of QuiCache is now available, featuring several notable improvements!</a></strong></p>
 				<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 					<h2>Install</h2>
 				</a>
 				<p><strong>Yarn</strong></p>
-				<p><code>yarn add quiCache@next</code></p>
+				<p><code>yarn add quiCache</code></p>
 				<p><strong>NPM</strong></p>
-				<p><code>npm i --save quiCache@next</code></p>
+				<p><code>npm i --save quiCache</code></p>
 				<a href="#introduction" id="introduction" style="color: inherit; text-decoration: none;">
 					<h2>Introduction</h2>
 				</a>
-				<p>quiCache provides a key-value structure for data to be stored in. When adding data to the cache, you specify the key, and the data as arguments to <code>setCacheData()</code>, and quiCache handles everything else.
-				When reading data from the cache, simply provide the key to <code>getCacheData()</code>.</p>
+				<p>QuiCache is an in-memory caching solution for Javascript and Typescript applications. It relies only on the <code>date-fns</code> package, meaning that it should be compatible with every major JS environment out there.</p>
+				<p>QuiCache provides a key-value structure for data to be stored in. When adding data to the cache, you specify the key, and the data as arguments to <code>setCacheData()</code>, and quiCache handles everything else. When reading data from the cache, simply provide the key to <code>getCacheData()</code>.</p>
+				<a href="#api--documentation" id="api--documentation" style="color: inherit; text-decoration: none;">
+					<h2>API / Documentation</h2>
+				</a>
+				<p>See the <a href="./docs/index.html">docs folder</a> for full details.
+				Usage examples can be found at the bottom of the readme.</p>
+				<a href="#version-30" id="version-30" style="color: inherit; text-decoration: none;">
+					<h4>Version 3.0</h4>
+				</a>
+				<p>Version 3 now provides support for Typescript generics.</p>
+				<p>This means that <code>data</code> returned from the following methods will infer type data:</p>
+				<ul>
+					<li><code>onCacheDataAdd</code></li>
+					<li><code>onCacheDataAccessed</code></li>
+					<li><code>onCacheDataDelete</code></li>
+					<li><code>onCacheDataExpired</code></li>
+					<li><code>onCacheDataAlreadyExists</code></li>
+					<li><code>getCacheData</code></li>
+					<li><code>setCacheData</code></li>
+					<li><code>getAllCachedData</code></li>
+					<li><code>deleteCacheData</code></li>
+				</ul>
+				<p>Due to this, when creating a cache instance with <code>new QuiCache()</code>, you must also define the data type you&#39;re returning if you&#39;re fully typing it:</p>
+				<pre><code>interface <span class="hljs-class">IMyDataInterface </span>{
+<span class="hljs-symbol">  aString:</span> string;
+<span class="hljs-symbol">  aNumber:</span> number;
+<span class="hljs-symbol">  aBoolean:</span> boolean;
+}
+
+const MyCache: ICacheManager<span class="hljs-params">&lt;IMyDataInterface&gt;</span> = new QuiCache({
+<span class="hljs-symbol">  cacheName:</span> <span class="hljs-string">&quot;MyCache&quot;</span>,
+<span class="hljs-symbol">  cacheMaxAgeInSeconds:</span> <span class="hljs-number">30</span>
+});</code></pre><p>You can still create and manage your cache in the same way if you&#39;re not specifying the type <code>ICacheManager</code>, but type data may not be returned.</p>
+				<p>This change doesn&#39;t prevent your ability to store data of <code>any</code> type in an individual cache field, but merely enhances the developer experience if you use 1 cache for data which follows a specific interface.</p>
+				<p>No other changes beyond those in 2.0 are required to be compatible with QuiCache 3.0.</p>
 				<a href="#version-20" id="version-20" style="color: inherit; text-decoration: none;">
 					<h4>Version 2.0</h4>
 				</a>
@@ -94,7 +127,7 @@
 					<li>New optional callbacks in the constructor method have been aded: <code>onCacheDataAdd</code>, <code>onCacheDataDelete</code>, <code>onCacheDataExpired</code>, <code>onCacheDataAlreadyExists</code></li>
 					<li>Version 2.1.2 has added some new optional callback:<ul>
 							<li><code>onCacheDataAccessed</code> - this will trigger when a field is accessed in the cache</li>
-							<li><code>onCacheDataDoesNotAlreadyExist</code> - this will trigger if the specified field is not found in the cache when calling <code>setCacheData</code>, <code>deleteCacheData</code> </li>
+							<li><code>onCacheDataDoesNotAlreadyExist</code> - this will trigger if the specified field is not found in the cache when calling <code>setCacheData</code>, <code>deleteCacheData</code></li>
 						</ul>
 					</li>
 					<li>Enabling and disabling debug has been removed due to addition of callbacks</li>
@@ -110,7 +143,7 @@
 				</a>
 				<ul>
 					<li>The constructor now expects an object with params/arguments</li>
-					<li>You can only specify a cache maximum age value - this value is in seconds (e.g. 120 = 2 minutes)</li>
+					<li>You can only specify a cache maximum age value in seconds (e.g. 120 = 2 minutes), and it is no longer possible to specify the unit of time</li>
 					<li>If a key already exists in the cache, it&#39;s data will <strong>not</strong> be overwritten when calling <code>setCacheData()</code></li>
 					<li>It is possible to update the cache max age after creation by calling <code>setCacheMaxAge()</code> and passing a value<ul>
 							<li>Values which were added to the cache before this method is called are <strong>not</strong> affected and will be removed at the end of the originally intended expiry time</li>
@@ -123,41 +156,52 @@
 				<p>The following interfaces and enums are exported from quicache to assist in development;</p>
 				<pre><code><span class="hljs-attribute">ICacheManagerDataCache
 ICacheManager</span></code></pre>
-				<a href="#api" id="api" style="color: inherit; text-decoration: none;">
-					<h2>API</h2>
-				</a>
-				<p>See the <a href="./docs/index.html">docs folder</a> for full details</p>
 				<a href="#example" id="example" style="color: inherit; text-decoration: none;">
 					<h2>Example</h2>
 				</a>
 				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> quicache, { ICacheManager } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;quicache&quot;</span>;
 
-<span class="hljs-keyword">const</span> myCache: ICacheManager = <span class="hljs-keyword">new</span> quicache({
-    cacheMaxAgeInSeconds: <span class="hljs-number">75</span>,
-    cacheName: <span class="hljs-string">&quot;MyCache&quot;</span>,
-    onCacheDataExpired: <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Field <span class="hljs-subst">${data.field}</span> expired in cache <span class="hljs-subst">${data.cacheName}</span>`</span>),
-    onCacheDataAdd: <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Field <span class="hljs-subst">${data.field}</span> added to cache <span class="hljs-subst">${data.cacheName}</span>`</span>),
-    onCacheDataAlreadyExists: <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> {
-        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Field <span class="hljs-subst">${data.field}</span> already exists in cache <span class="hljs-subst">${data.cacheName}</span>, and expires in <span class="hljs-subst">${data.expires}</span> seconds`</span>)
-    }
+<span class="hljs-comment">// Create an interface for your data</span>
+<span class="hljs-keyword">interface</span> IMyInterface {
+  aString: <span class="hljs-built_in">string</span>;
+  aBoolean: <span class="hljs-built_in">boolean</span>;
+  aNumber: <span class="hljs-built_in">number</span>;
+  anOptionalString?: <span class="hljs-built_in">string</span>;
+}
+
+<span class="hljs-comment">// Initialize the cache with your interface</span>
+<span class="hljs-keyword">const</span> myCache: ICacheManager&lt;IMyInterface&gt; = <span class="hljs-keyword">new</span> quicache({
+  cacheName: <span class="hljs-string">&quot;MyCache&quot;</span>,
+  cacheMaxAgeInSeconds: <span class="hljs-number">30</span>,
+  onCacheDataExpired: <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span>
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Field <span class="hljs-subst">${data.field}</span> expired in cache <span class="hljs-subst">${data.cacheName}</span>`</span>),
+  onCacheDataAdd: <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span>
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Field <span class="hljs-subst">${data.field}</span> added to cache <span class="hljs-subst">${data.cacheName}</span>`</span>),
+  onCacheDataAlreadyExists: <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(
+      <span class="hljs-string">`Field <span class="hljs-subst">${data.field}</span> already exists in cache <span class="hljs-subst">${data.cacheName}</span>, and expires in <span class="hljs-subst">${data.expires}</span> seconds`</span>
+    );
+  },
 });
 
 <span class="hljs-keyword">const</span> cacheKey = <span class="hljs-string">&quot;testData&quot;</span>;
+
+<span class="hljs-comment">// If the data doesn&#x27;t exist in the cache, we&#x27;ll create it</span>
 <span class="hljs-keyword">if</span> (!myCache.cacheDataExists(cacheKey)) {
   <span class="hljs-keyword">try</span> {
     <span class="hljs-keyword">const</span> dataToSetInCache = {
       aString: <span class="hljs-string">&quot;ABC&quot;</span>,
       aBoolean: <span class="hljs-literal">true</span>,
-      aNumber: <span class="hljs-number">123</span>
-    }
+      aNumber: <span class="hljs-number">123</span>,
+    };
 
     <span class="hljs-comment">// setCacheData returns the timestamp and data that it inserts into the cache</span>
-    <span class="hljs-keyword">const</span> cachedata = myCache.setCacheData(cacheKey, dataToSetInCache);
-    <span class="hljs-keyword">return</span> cachedata.data;
+    <span class="hljs-keyword">return</span> myCache.setCacheData(cacheKey, dataToSetInCache).data;
   } <span class="hljs-keyword">catch</span> (err) {
     <span class="hljs-keyword">return</span> err;
   }
 } <span class="hljs-keyword">else</span> {
+  <span class="hljs-comment">// Data exists in cache, so we&#x27;ll return it</span>
   <span class="hljs-comment">// getCacheData returns the timestamp and data</span>
   <span class="hljs-keyword">const</span> cachedata = myCache.getCacheData(cacheKey);
   <span class="hljs-keyword">return</span> cachedata.data;
@@ -201,13 +245,14 @@ ICacheManager</span></code></pre>
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 			</ul>
 			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
 				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
 			</ul>
 		</div>
 	</div>
