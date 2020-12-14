@@ -16,15 +16,13 @@ export interface IConvertStructure {
  * @param timestamp timestamp: The time that the entry was added to the cache
  * @param cacheName data: Contains the data you passed to the cache
  */
-interface ICacheEntry {
+interface ICacheEntry<T> {
   timestamp: number;
-  data: {
-    [key: string]: any;
-  };
+  data: T;
 }
 
-export interface ICacheManagerDataCache {
-  [key: string]: ICacheEntry;
+export interface ICacheManagerDataCache<T> {
+  [key: string]: ICacheEntry<T>;
 }
 
 export enum QuicacheMessages {
@@ -45,15 +43,15 @@ export enum QuicacheMessages {
  * @param onCacheNameSet onCacheDataExpired: A callback to run when data in the cache expires
  * @param onCacheMaxAgeSet onCacheDataExpired: A callback to run when data in the cache expires
  */
-interface ICacheConstructorProps {
+interface ICacheConstructorProps<T> {
   cacheMaxAgeInSeconds: number;
   cacheName?: string;
   showDebugMessages?: boolean;
-  onCacheDataAdd?: (data: IOnCacheEvent) => void;
-  onCacheDataAccessed?: (data: IOnCacheEvent) => void;
-  onCacheDataDelete?: (data: IOnCacheEvent) => void;
-  onCacheDataExpired?: (data: IOnCacheEvent) => void;
-  onCacheDataAlreadyExists?: (data: IOnCacheEvent) => void;
+  onCacheDataAdd?: (data: IOnCacheEvent<T>) => void;
+  onCacheDataAccessed?: (data: IOnCacheEvent<T>) => void;
+  onCacheDataDelete?: (data: IOnCacheEvent<T>) => void;
+  onCacheDataExpired?: (data: IOnCacheEvent<T>) => void;
+  onCacheDataAlreadyExists?: (data: IOnCacheEvent<T>) => void;
   onCacheDataDoesNotAlreadyExist?: (data: IOnCacheDataNotExistEvent) => void;
   onCacheNameSet?: (data: IOnCacheNameSet) => void;
   onCacheMaxAgeSet?: (data: IOnCacheMaxAgeSet) => void;
@@ -79,24 +77,24 @@ interface IOnCacheDataNotExistEvent {
   expires: number;
 }
 
-interface IOnCacheEvent {
+interface IOnCacheEvent<T> {
   /** The key used to map data in the cache */
   field: string | number;
   /** The data stored against the field/key */
-  data: ICacheEntry;
+  data: ICacheEntry<T>;
   /** The cache name as defined during construction */
   cacheName: string;
   /** The time until the data with the specified field/key will expire, in seconds */
   expires: number;
 }
 
-export interface ICacheManager {
-  getAllCachedData: () => Map<string, ICacheManagerDataCache>;
+export interface ICacheManager<T> {
+  getAllCachedData: () => Map<string | number, ICacheManagerDataCache<T>>;
   setCacheMaxAge: (cacheMaxAgeInSeconds: number) => void;
   setCacheName: (cacheName: string) => void;
-  getCacheData: (field: string | number) => ICacheEntry | null;
-  setCacheData: (field: string | number, data: any) => ICacheEntry;
-  deleteCacheData: (field: string | number) => ICacheEntry | null;
+  getCacheData: (field: string | number) => ICacheEntry<T> | null;
+  setCacheData: (field: string | number, data: T) => ICacheEntry<T>;
+  deleteCacheData: (field: string | number) => ICacheEntry<T> | null;
   cacheDataExists: (field: string | number) => boolean;
   getCacheDataAge: (field: string | number) => number;
   getCacheSize: (field: string | number) => number;
@@ -107,23 +105,23 @@ export interface ICacheManager {
 /**
  * The main CacheManager class
  */
-class CacheManager implements ICacheManager {
-  private _dataCache: Map<string, ICacheManagerDataCache> = new Map();
+class CacheManager<T> implements ICacheManager<T> {
+  private _dataCache: Map<string, ICacheManagerDataCache<T>> = new Map();
   private _cacheName: string = null;
   private _showDebugMessages: boolean = false;
   private _cacheMaxAgeInSeconds: number = 0;
-  private _onCacheDataExpired: (data: IOnCacheEvent) => void;
-  private _onCacheDataAdd: (data: IOnCacheEvent) => void;
-  private _onCacheDataAccessed: (data: IOnCacheEvent) => void;
-  private _onCacheDataDelete: (data: IOnCacheEvent) => void;
-  private _onCacheDataAlreadyExists: (data: IOnCacheEvent) => void;
+  private _onCacheDataExpired: (data: IOnCacheEvent<T>) => void;
+  private _onCacheDataAdd: (data: IOnCacheEvent<T>) => void;
+  private _onCacheDataAccessed: (data: IOnCacheEvent<T>) => void;
+  private _onCacheDataDelete: (data: IOnCacheEvent<T>) => void;
+  private _onCacheDataAlreadyExists: (data: IOnCacheEvent<T>) => void;
   private _onCacheDataDoesNotAlreadyExist: (
     data: IOnCacheDataNotExistEvent
   ) => void;
   private _onCacheNameSet: (data: IOnCacheNameSet) => void;
   private _onCacheMaxAgeSet: (data: IOnCacheMaxAgeSet) => void;
 
-  constructor(args: ICacheConstructorProps) {
+  constructor(args: ICacheConstructorProps<T>) {
     this._showDebugMessages = args?.showDebugMessages ?? false;
     if (!args?.cacheMaxAgeInSeconds && this._showDebugMessages) {
       console.warn(
@@ -138,19 +136,19 @@ class CacheManager implements ICacheManager {
     }
     this._cacheMaxAgeInSeconds = args?.cacheMaxAgeInSeconds ?? 60;
     this._cacheName = args?.cacheName ?? fallbackCacheName;
-    this._onCacheDataAdd = (data: IOnCacheEvent) =>
+    this._onCacheDataAdd = (data: IOnCacheEvent<T>) =>
       args.onCacheDataAdd ? args.onCacheDataAdd(data) : {};
-    this._onCacheDataExpired = (data: IOnCacheEvent) =>
+    this._onCacheDataExpired = (data: IOnCacheEvent<T>) =>
       args.onCacheDataExpired ? args.onCacheDataExpired(data) : {};
-    this._onCacheDataAlreadyExists = (data: IOnCacheEvent) =>
+    this._onCacheDataAlreadyExists = (data: IOnCacheEvent<T>) =>
       args.onCacheDataAlreadyExists ? args.onCacheDataAlreadyExists(data) : {};
     this._onCacheDataDoesNotAlreadyExist = (data: IOnCacheDataNotExistEvent) =>
       args.onCacheDataDoesNotAlreadyExist
         ? args.onCacheDataDoesNotAlreadyExist(data)
         : {};
-    this._onCacheDataAccessed = (data: IOnCacheEvent) =>
+    this._onCacheDataAccessed = (data: IOnCacheEvent<T>) =>
       args.onCacheDataAccessed ? args.onCacheDataAccessed(data) : {};
-    this._onCacheDataDelete = (data: IOnCacheEvent) =>
+    this._onCacheDataDelete = (data: IOnCacheEvent<T>) =>
       args.onCacheDataDelete ? args.onCacheDataDelete(data) : {};
     this._onCacheNameSet = (data: IOnCacheNameSet) =>
       args.onCacheNameSet ? args.onCacheNameSet(data) : {};
@@ -200,7 +198,7 @@ class CacheManager implements ICacheManager {
    * @returns The contents of the cache
    * @public
    */
-  public getAllCachedData = (): Map<string, ICacheManagerDataCache> =>
+  public getAllCachedData = (): Map<string, ICacheManagerDataCache<T>> =>
     this?._dataCache;
 
   /**
@@ -209,7 +207,7 @@ class CacheManager implements ICacheManager {
    * @returns The cached data, or null if it does not exist
    * @public
    */
-  public getCacheData = (field: string | number): ICacheEntry | null => {
+  public getCacheData = (field: string | number): ICacheEntry<T> | null => {
     this._onCacheDataAccessed({
       data: this._dataCache[field],
       cacheName: this._cacheName,
@@ -265,7 +263,7 @@ class CacheManager implements ICacheManager {
    * @returns The cached data as it is stored in the cache
    * @public
    */
-  public setCacheData = (field: string | number, data: any): ICacheEntry => {
+  public setCacheData = (field: string | number, data: any): ICacheEntry<T> => {
     if (this.cacheDataExists(field)) {
       this._onCacheDataAlreadyExists({
         data: this._dataCache[field],
@@ -323,7 +321,7 @@ class CacheManager implements ICacheManager {
    * @returns The cached data as it is stored in the cache, or null if the specified key does not exist
    * @public
    */
-  public deleteCacheData = (field: string | number): ICacheEntry | null => {
+  public deleteCacheData = (field: string | number): ICacheEntry<T> | null => {
     if (this.cacheDataExists(field)) {
       this._onCacheDataDelete({
         data: this._dataCache[field],
