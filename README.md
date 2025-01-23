@@ -147,4 +147,4 @@ if (!myCache.cacheDataExists(cacheKey)) {
 
 ## Author(s)
 
-👤 **Scott Pritchard ([Github](https://github.com/ChronSyn), [Twitter](https://twitter.com/ChronSyn))**
+👤 **Scott Pritchard ([Github](https://github.com/ChronSyn)**
