@@ -1,5 +1,3 @@
-import differenceInSeconds from "date-fns/differenceInSeconds";
-
 export interface IConvertStructure {
   SECOND: number;
   SECONDS: number;
@@ -107,6 +105,10 @@ export interface ICacheManager<T> {
  */
 class CacheManager<T> implements ICacheManager<T> {
   private _dataCache: Map<string, ICacheManagerDataCache<T>> = new Map();
+  private _expiryTimers: Map<
+    string | number,
+    ReturnType<typeof setTimeout>
+  > = new Map();
   private _cacheName: string = null;
   private _showDebugMessages: boolean = false;
   private _cacheMaxAgeInSeconds: number = 0;
@@ -155,6 +157,19 @@ class CacheManager<T> implements ICacheManager<T> {
     this._onCacheMaxAgeSet = (data: IOnCacheMaxAgeSet) =>
       args.onCacheMaxAgeSet ? args.onCacheMaxAgeSet(data) : {};
   }
+
+  /**
+   * @description Cancels the pending expiry timer for the specified field/key, if one exists
+   * @param field The field/key whose expiry timer should be cancelled
+   * @private
+   */
+  private _clearExpiryTimer = (field: string | number): void => {
+    const expiryTimer = this._expiryTimers.get(field);
+    if (expiryTimer !== undefined) {
+      clearTimeout(expiryTimer);
+      this._expiryTimers.delete(field);
+    }
+  };
 
   /**
    * @description Updates the cache max age to a new value
@@ -224,12 +239,8 @@ class CacheManager<T> implements ICacheManager<T> {
    * @public
    */
   public getCacheDataAge = (field: string | number): number => {
-    return this?._dataCache?.[field]?.timestamp
-      ? differenceInSeconds(
-          new Date(),
-          new Date(this?._dataCache?.[field].timestamp)
-        )
-      : -1;
+    const timestamp = this?._dataCache?.[field]?.timestamp;
+    return timestamp ? Math.trunc((Date.now() - timestamp) / 1000) : -1;
   };
 
   /**
@@ -293,7 +304,9 @@ class CacheManager<T> implements ICacheManager<T> {
     });
 
     const deleteTimeout = this._cacheMaxAgeInSeconds * 1000;
-    setTimeout(() => {
+    const expiryTimer = setTimeout(() => {
+      this._expiryTimers.delete(field);
+
       // Check if cached data exists before attempting to invoke expiration callback or delete non-existant property
       if (!this.cacheDataExists(field)) {
         this._onCacheDataDoesNotAlreadyExist({
@@ -312,6 +325,15 @@ class CacheManager<T> implements ICacheManager<T> {
       });
       delete this._dataCache[field];
     }, deleteTimeout);
+
+    // A pending expiry shouldn't hold a Node process open - the cache dies with
+    // its host anyway. Browsers and RN return a number from setTimeout, so the
+    // guard skips them.
+    if (typeof (expiryTimer as any)?.unref === "function") {
+      (expiryTimer as any).unref();
+    }
+    this._expiryTimers.set(field, expiryTimer);
+
     return this?._dataCache[field];
   };
 
@@ -331,6 +353,7 @@ class CacheManager<T> implements ICacheManager<T> {
       });
       const cacheEntry = this?._dataCache[field];
       delete this._dataCache[field];
+      this._clearExpiryTimer(field);
       return cacheEntry;
     } else {
       this._onCacheDataDoesNotAlreadyExist({

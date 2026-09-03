@@ -14,7 +14,7 @@
 
 ## Introduction
 
-QuiCache is an in-memory caching solution for Javascript and Typescript applications. It relies only on the `date-fns` package, meaning that it should be compatible with every major JS environment out there.
+QuiCache is an in-memory caching solution for Javascript and Typescript applications. It has zero runtime dependencies, meaning that it should be compatible with every major JS environment out there.
 
 QuiCache provides a key-value structure for data to be stored in. When adding data to the cache, you specify the key, and the data as arguments to `setCacheData()`, and quiCache handles everything else. When reading data from the cache, simply provide the key to `getCacheData()`.
 
