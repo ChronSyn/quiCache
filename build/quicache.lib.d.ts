@@ -95,6 +95,7 @@ export interface ICacheManager<T> {
  */
 declare class CacheManager<T> implements ICacheManager<T> {
     private _dataCache;
+    private _expiryTimers;
     private _cacheName;
     private _showDebugMessages;
     private _cacheMaxAgeInSeconds;
@@ -107,6 +108,12 @@ declare class CacheManager<T> implements ICacheManager<T> {
     private _onCacheNameSet;
     private _onCacheMaxAgeSet;
     constructor(args: ICacheConstructorProps<T>);
+    /**
+     * @description Cancels the pending expiry timer for the specified field/key, if one exists
+     * @param field The field/key whose expiry timer should be cancelled
+     * @private
+     */
+    private _clearExpiryTimer;
     /**
      * @description Updates the cache max age to a new value
      * @param cacheMaxAgeInSeconds The new max age for the cache

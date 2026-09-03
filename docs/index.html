@@ -80,7 +80,7 @@
 				<a href="#introduction" id="introduction" style="color: inherit; text-decoration: none;">
 					<h2>Introduction</h2>
 				</a>
-				<p>QuiCache is an in-memory caching solution for Javascript and Typescript applications. It relies only on the <code>date-fns</code> package, meaning that it should be compatible with every major JS environment out there.</p>
+				<p>QuiCache is an in-memory caching solution for Javascript and Typescript applications. It has zero runtime dependencies, meaning that it should be compatible with every major JS environment out there.</p>
 				<p>QuiCache provides a key-value structure for data to be stored in. When adding data to the cache, you specify the key, and the data as arguments to <code>setCacheData()</code>, and quiCache handles everything else. When reading data from the cache, simply provide the key to <code>getCacheData()</code>.</p>
 				<a href="#api--documentation" id="api--documentation" style="color: inherit; text-decoration: none;">
 					<h2>API / Documentation</h2>
@@ -163,7 +163,7 @@ ICacheManager</span></code></pre>
 
 <span class="hljs-comment">// Create an interface for your data</span>
 <span class="hljs-keyword">interface</span> IMyInterface {
-  aString: <span class="hljs-built_in">string</span>;
+  <span class="hljs-attr">aString</span>: <span class="hljs-built_in">string</span>;
   aBoolean: <span class="hljs-built_in">boolean</span>;
   aNumber: <span class="hljs-built_in">number</span>;
   anOptionalString?: <span class="hljs-built_in">string</span>;
@@ -171,13 +171,13 @@ ICacheManager</span></code></pre>
 
 <span class="hljs-comment">// Initialize the cache with your interface</span>
 <span class="hljs-keyword">const</span> myCache: ICacheManager&lt;IMyInterface&gt; = <span class="hljs-keyword">new</span> quicache({
-  cacheName: <span class="hljs-string">&quot;MyCache&quot;</span>,
-  cacheMaxAgeInSeconds: <span class="hljs-number">30</span>,
-  onCacheDataExpired: <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span>
+  <span class="hljs-attr">cacheName</span>: <span class="hljs-string">&quot;MyCache&quot;</span>,
+  <span class="hljs-attr">cacheMaxAgeInSeconds</span>: <span class="hljs-number">30</span>,
+  <span class="hljs-attr">onCacheDataExpired</span>: <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span>
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Field <span class="hljs-subst">${data.field}</span> expired in cache <span class="hljs-subst">${data.cacheName}</span>`</span>),
-  onCacheDataAdd: <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span>
+  <span class="hljs-attr">onCacheDataAdd</span>: <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span>
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Field <span class="hljs-subst">${data.field}</span> added to cache <span class="hljs-subst">${data.cacheName}</span>`</span>),
-  onCacheDataAlreadyExists: <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> {
+  <span class="hljs-attr">onCacheDataAlreadyExists</span>: <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> {
     <span class="hljs-built_in">console</span>.log(
       <span class="hljs-string">`Field <span class="hljs-subst">${data.field}</span> already exists in cache <span class="hljs-subst">${data.cacheName}</span>, and expires in <span class="hljs-subst">${data.expires}</span> seconds`</span>
     );
@@ -190,9 +190,9 @@ ICacheManager</span></code></pre>
 <span class="hljs-keyword">if</span> (!myCache.cacheDataExists(cacheKey)) {
   <span class="hljs-keyword">try</span> {
     <span class="hljs-keyword">const</span> dataToSetInCache = {
-      aString: <span class="hljs-string">&quot;ABC&quot;</span>,
-      aBoolean: <span class="hljs-literal">true</span>,
-      aNumber: <span class="hljs-number">123</span>,
+      <span class="hljs-attr">aString</span>: <span class="hljs-string">&quot;ABC&quot;</span>,
+      <span class="hljs-attr">aBoolean</span>: <span class="hljs-literal">true</span>,
+      <span class="hljs-attr">aNumber</span>: <span class="hljs-number">123</span>,
     };
 
     <span class="hljs-comment">// setCacheData returns the timestamp and data that it inserts into the cache</span>
@@ -209,7 +209,7 @@ ICacheManager</span></code></pre>
 				<a href="#authors" id="authors" style="color: inherit; text-decoration: none;">
 					<h2>Author(s)</h2>
 				</a>
-				<p>👤 <strong>Scott Pritchard (<a href="https://github.com/ChronSyn">Github</a>, <a href="https://twitter.com/ChronSyn">Twitter</a>)</strong></p>
+				<p>👤 <strong>Scott Pritchard (<a href="https://github.com/ChronSyn">Github</a></strong></p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
